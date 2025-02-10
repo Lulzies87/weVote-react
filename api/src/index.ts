@@ -25,7 +25,31 @@ app.get("/polls", async (req, res) => {
     res.status(200).json(polls);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Couldn't fetch polls from database." });
+    res.status(500).json({ error: "Failed to fetch polls from database." });
+  }
+});
+
+app.post("/poll", async (req, res) => {
+  const { title, deadline, cost, details } = req.body;
+
+  const newPoll = {
+    title,
+    status: 'Open',
+    cost,
+    votes: 0,
+    deadline,
+  }
+
+  try {
+    const connection = await getConnection();
+    const query = `INSERT INTO polls (title, status, cost, votes, deadline) VALUES (?, ?, ?, ?, ?);`;
+
+    await connection.execute(query, [newPoll.title, newPoll.status, newPoll.cost, newPoll.votes, newPoll.deadline]);
+
+    res.status(200).json(newPoll);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to create a new poll." })
   }
 });
 
