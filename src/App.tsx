@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { server } from "./services/axiosInstance";
 import "./App.scss";
 import React from "react";
+import { Modal } from "./components/modal";
 
 interface Poll {
   id: number,
@@ -15,6 +16,7 @@ interface Poll {
 
 function App() {
   const [polls, setPolls] = useState<Poll[]>([]);
+  const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
 
   useEffect(() => {
     async function getPolls() {
@@ -36,6 +38,9 @@ function App() {
     return statuses.map(status => polls.filter(poll => poll.status === status)).flat();
   }
 
+  const openModal = () => setIsModalVisible(true);
+  const closeModal = () => setIsModalVisible(false);
+
   return (
     <>
       <h1 className='headline m-4'>Welcome to weVote!</h1>
@@ -44,7 +49,7 @@ function App() {
 
         <div className="flex justify-between items-center">
           <h2>Polls</h2>
-          <button className="w-8 h-8 rounded">+</button>
+          <button className="w-8 h-8 rounded" onClick={openModal}>+</button>
         </div>
 
         <section className="pt-2 grid grid-cols-5 gap-x-4">
@@ -72,6 +77,8 @@ function App() {
           ))}
         </section>
       </article>
+
+      <Modal isVisible={isModalVisible} onClose={closeModal} />
     </>
   );
 }

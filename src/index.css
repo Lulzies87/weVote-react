@@ -56,10 +56,26 @@ button {
   cursor: pointer;
   transition: background-color 0.3s;
 }
+
 button:hover {
-  background-color: #6D05FF;
+  background-color: #0378cc;
 }
+
 button:focus,
 button:focus-visible {
+  outline: 4px auto -webkit-focus-ring-color;
+}
+
+button.destructive {
+  background-color: #ff4d4d;
+  transition: background-color 0.3s;
+}
+
+button.destructive:hover {
+  background-color: #e60000;
+}
+
+button.destructive:focus,
+button.destructive:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
