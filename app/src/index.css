@@ -1,6 +1,4 @@
-@use "tailwindcss/base";
-@use "tailwindcss/components";
-@use "tailwindcss/utilities";
+@import "tailwindcss";
 
 :root {
   font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
@@ -35,23 +33,31 @@ body {
 }
 
 h1 {
+  font-weight: bold;
+  color: #0496ff;
   font-size: 3.2em;
-  line-height: 1.1;
+}
+
+h2 {
+  font-weight: bold;
+  color: #0496ff;
+  font-size: 1.6em;
+}
+
+h3 {
+  font-weight: bold;
+  font-size: 1.1em;
+  color: #0496ff;
 }
 
 button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
   font-family: inherit;
-  background-color: #1a1a1a;
+  background-color: #0496ff;
   cursor: pointer;
-  transition: border-color 0.25s;
+  transition: background-color 0.3s;
 }
 button:hover {
-  border-color: #646cff;
+  background-color: #6D05FF;
 }
 button:focus,
 button:focus-visible {
