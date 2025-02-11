@@ -30,7 +30,7 @@ export function Modal({ isVisible, onClose }: ModalProps) {
         e.preventDefault();
 
         try {
-            await server.post("/poll", newPoll);
+            await server.post("/polls", newPoll);
             console.log("Poll created successfully!", newPoll);
             onCancel();
         } catch (error) {

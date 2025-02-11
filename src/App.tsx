@@ -54,7 +54,7 @@ function App() {
           {polls.map((poll) => (
             <React.Fragment key={poll.id}>
               <p>
-                <Link to={`/poll/${poll.id}`}>{poll.title}</Link>
+                <Link to={`/polls/${poll.id}`}>{poll.title}</Link>
               </p>
               <p
                 className={`
