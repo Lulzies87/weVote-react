@@ -5,6 +5,6 @@ import { NotFoundPage } from "./components/NotFoundPage";
 
 export const router = createBrowserRouter([
     { path: "/", element: <App /> },
-    { path: "/poll/:id", element: <PollPage /> },
+    { path: "/polls/:id", element: <PollPage /> },
     { path: "*", element: <NotFoundPage /> },
 ]);
