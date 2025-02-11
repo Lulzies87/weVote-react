@@ -80,3 +80,7 @@ button.destructive:focus,
 button.destructive:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
+
+button:disabled {
+  background-color: #4b5563;
+}
