@@ -3,16 +3,7 @@ import { server } from "./services/axiosInstance";
 import "./App.scss";
 import React from "react";
 import { Modal } from "./components/modal";
-
-interface Poll {
-  id: number,
-  title: string,
-  status: string,
-  cost: number,
-  votes: number,
-  deadline: Date,
-  created_at: Date
-}
+import { Poll } from "./types/poll";
 
 function App() {
   const [polls, setPolls] = useState<Poll[]>([]);
