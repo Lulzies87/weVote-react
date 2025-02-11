@@ -29,7 +29,7 @@ app.get("/polls", async (req, res) => {
   }
 });
 
-app.get("/poll/:id", async (req, res) => {
+app.get("/polls/:id", async (req, res) => {
   const id = req.params.id;
 
   try {
@@ -50,7 +50,7 @@ app.get("/poll/:id", async (req, res) => {
   }
 });
 
-app.post("/poll", async (req, res) => {
+app.post("/polls", async (req, res) => {
   const { title, deadline, cost, details } = req.body;
 
   const newPoll = {
@@ -67,10 +67,32 @@ app.post("/poll", async (req, res) => {
 
     await connection.execute(query, [newPoll.title, newPoll.status, newPoll.cost, newPoll.votes, newPoll.deadline]);
 
-    res.status(200).json(newPoll);
+    res.status(201).json(newPoll);
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Failed to create a new poll." })
+  }
+});
+
+app.post("/polls/:pollID/votes", async (req, res) => {
+  const { apartment, vote } = req.body;
+  const { pollID } = req.params;
+
+  try {
+    const connection = await getConnection();
+
+    const [apartmentCheck] = await connection.promise().query<RowDataPacket[]>(`SELECT * FROM votes WHERE poll_id = ? AND apartment = ?`, [pollID, apartment]);
+    if (apartmentCheck.length > 0) {
+      res.status(409).json({ message: "Apartment already voted for this poll." });
+      return;
+    }
+
+    const query = `INSERT INTO votes (poll_id, apartment, vote) VALUES (?, ?, ?);`;
+    await connection.execute(query, [pollID, apartment, vote]);
+    res.status(201).json({ message: "Vote registered successfully!" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to register the vote." });
   }
 });
 
