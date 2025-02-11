@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 import { server } from "../services/axiosInstance";
 import { Poll } from "../types/poll";
 
 export function PollPage() {
     const { id } = useParams();
     const [poll, setPoll] = useState<Poll | null>(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         async function fetchPoll() {
@@ -34,7 +35,7 @@ export function PollPage() {
                 </div>
                 <p>{poll.details}</p>
                 <div className="flex justify-around">
-                    <button className="py-1 px-4 rounded destructive">Back</button>
+                    <button className="py-1 px-4 rounded destructive" onClick={() => navigate('/')}>Back</button>
                     <button className="py-1 px-4 rounded">Vote</button>
                 </div>
             </div>
