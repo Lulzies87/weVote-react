@@ -29,6 +29,27 @@ app.get("/polls", async (req, res) => {
   }
 });
 
+app.get("/poll/:id", async (req, res) => {
+  const id = req.params.id;
+
+  try {
+    const connection = await getConnection();
+    const query = `SELECT * FROM weVote.polls WHERE id = ?`;
+
+    const [poll] = await connection.promise().query<RowDataPacket[]>(query, [id]);
+
+    if (poll.length === 0) {
+      res.status(404).json({ error: "Poll not found" });
+      return;
+    }
+
+    res.status(200).json(poll[0]);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to fetch polls from database." });
+  }
+});
+
 app.post("/poll", async (req, res) => {
   const { title, deadline, cost, details } = req.body;
 
