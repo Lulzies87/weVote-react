@@ -8,14 +8,16 @@ import "./App.scss";
 
 function App() {
   const [polls, setPolls] = useState<Poll[]>([]);
+  const [totalApartments, setTotalApartments] = useState(0);
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
 
   useEffect(() => {
     async function getPolls() {
       try {
         const res = await server.get("/polls");
-        const arrangedPolls = arrangeByStatus(res.data);
+        const arrangedPolls = arrangeByStatus(res.data.polls);
         setPolls(arrangedPolls);
+        setTotalApartments(res.data.totalApartments);
       } catch (error) {
         console.error("Failed to fetch polls", error);
       }
@@ -65,7 +67,7 @@ function App() {
               `}
               >{poll.status}</p>
               <p>{poll.cost == 0 ? 'No cost' : poll.cost + ' NIS'}</p>
-              <p>{poll.votes} / 80</p>
+              <p>{poll.votes} / {totalApartments}</p>
               <p>{new Date(poll.deadline).toLocaleDateString('en-GB')}</p>
             </React.Fragment>
           ))}

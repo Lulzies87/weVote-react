@@ -7,6 +7,7 @@ import { Vote } from "../types/vote";
 export function PollPage() {
     const { id } = useParams();
     const [poll, setPoll] = useState<Poll | null>(null);
+    const [totalApartments, setTotalApartments] = useState(0);
     const [submittedVote, setSubmittedVote] = useState("");
     const navigate = useNavigate();
 
@@ -14,7 +15,8 @@ export function PollPage() {
         async function fetchPoll() {
             try {
                 const res = await server.get(`/polls/${id}`);
-                setPoll(res.data);
+                setPoll(res.data.poll);
+                setTotalApartments(res.data.totalApartments);
             } catch (error) {
                 console.error("Failed to fetch poll data:", error);
             }
@@ -56,7 +58,7 @@ export function PollPage() {
 
                 <div className="flex justify-between">
                     <p>Cost: {poll.cost}</p>
-                    <p>Votes: {poll.votes} / 80</p>
+                    <p>Votes: {poll.votes} / {totalApartments}</p>
                     <p>Deadline: {new Date(poll.deadline).toLocaleDateString("en-GB")}</p>
                 </div>
 
