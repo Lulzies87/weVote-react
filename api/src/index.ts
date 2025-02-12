@@ -18,11 +18,20 @@ app.get("/check", (_, res) => {
 app.get("/polls", async (req, res) => {
   try {
     const connection = await getConnection();
-    const query = `SELECT * FROM weVote.polls;`;
+    const query = `SELECT p.*, COALESCE(v.votes, 0) AS votes
+    FROM polls p
+    LEFT JOIN (
+      SELECT poll_id, COUNT(*) AS votes
+      FROM votes
+      GROUP BY poll_id
+    ) v
+    ON p.id = v.poll_id;`;
 
     const [polls]: [RowDataPacket[], FieldPacket[]] = await connection.promise().query(query);
 
-    res.status(200).json(polls);
+    const [apartmentCount]: [RowDataPacket[], FieldPacket[]] = await connection.promise().query("SELECT COUNT(DISTINCT apartment) AS total_apartments FROM tenants");
+
+    res.status(200).json({ polls: polls, totalApartments: apartmentCount[0].total_apartments });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Failed to fetch polls from database." });
@@ -34,16 +43,26 @@ app.get("/polls/:id", async (req, res) => {
 
   try {
     const connection = await getConnection();
-    const query = `SELECT * FROM weVote.polls WHERE id = ?`;
+    const query = `SELECT p.*, COALESCE(v.votes, 0) AS votes
+    FROM polls p
+    LEFT JOIN (
+      SELECT poll_id, COUNT(*) AS votes
+      FROM votes
+      GROUP BY poll_id
+    ) v
+    ON p.id = v.poll_id
+    WHERE p.id = ?;`;
 
     const [poll] = await connection.promise().query<RowDataPacket[]>(query, [id]);
+
+    const [apartmentCount]: [RowDataPacket[], FieldPacket[]] = await connection.promise().query("SELECT COUNT(DISTINCT apartment) AS total_apartments FROM tenants");
 
     if (poll.length === 0) {
       res.status(404).json({ error: "Poll not found" });
       return;
     }
 
-    res.status(200).json(poll[0]);
+    res.status(200).json({ poll: poll[0], totalApartments: apartmentCount[0].total_apartments });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Failed to fetch polls from database." });
