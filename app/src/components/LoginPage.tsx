@@ -1,9 +1,7 @@
-import "./LoginPage.css";
-
 export function LoginPage() {
     return (
         <>
-        <h1 className="lilach">Login</h1>
+            <h1>Login</h1>
         </>
     )
 }

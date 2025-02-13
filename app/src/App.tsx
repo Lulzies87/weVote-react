@@ -4,7 +4,6 @@ import { Link } from "react-router-dom";
 import { server } from "./services/axiosInstance";
 import { Modal } from "./components/modal";
 import { Poll } from "./types/poll";
-import "./App.css";
 
 function App() {
   const [polls, setPolls] = useState<Poll[]>([]);
@@ -37,21 +36,19 @@ function App() {
 
   return (
     <>
-      <h1 className='headline m-4'>Welcome to weVote!</h1>
+      <h1 className='m-4 text-center'>Welcome to weVote!</h1>
 
-      <article className="text-left m-4 p-2 border rounded">
+      <article className="m-4 p-2 border rounded">
 
         <div className="flex justify-between items-center">
           <h2>Polls</h2>
-          <button className="w-8 h-8 rounded" onClick={openModal}>+</button>
+          <button className="w-8 h-8" onClick={openModal}>+</button>
         </div>
 
         <section className="pt-2 grid grid-cols-5 gap-x-4">
-          <h3>Poll name</h3>
-          <h3>Status</h3>
-          <h3>Cost (per apartment)</h3>
-          <h3>Votes</h3>
-          <h3>Deadline</h3>
+          {["Poll name", "Status", "Cost", "Votes", "Deadline"].map((title, index) => {
+            return <h3 key={index}>{title}</h3>
+          })}
 
           {polls.map((poll) => (
             <React.Fragment key={poll.id}>
