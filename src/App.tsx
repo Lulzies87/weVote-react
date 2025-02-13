@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { server } from "./services/axiosInstance";
 import { Modal } from "./components/modal";
 import { Poll } from "./types/poll";
-import "./App.scss";
+import "./App.css";
 
 function App() {
   const [polls, setPolls] = useState<Poll[]>([]);
