@@ -1,10 +1,10 @@
 export interface Poll {
-    id: number,
+    id?: number,
     title: string,
-    status: string,
+    status?: string,
     cost: number,
-    votes: number,
-    deadline: Date,
+    votes?: number,
+    deadline: string,
     details: string,
-    createdAt: Date
+    createdAt?: Date
 }
