@@ -1,12 +1,6 @@
 import { ChangeEvent, useState } from "react"
 import { server } from "../services/axiosInstance";
-
-interface NewPoll {
-    title: string;
-    deadline: string;
-    cost: number;
-    details: string;
-}
+import { Poll } from "../types/poll";
 
 interface ModalProps {
     isVisible: boolean;
@@ -14,10 +8,14 @@ interface ModalProps {
 }
 
 export function Modal({ isVisible, onClose }: ModalProps) {
-    const [newPoll, setNewPoll] = useState<NewPoll>({ title: "", deadline: "", cost: 0, details: "" });
+    const aWeekFromToday = new Date();
+    aWeekFromToday.setDate(aWeekFromToday.getDate() + 7);
+    const deadline = aWeekFromToday.toISOString().split("T")[0];
+
+    const [newPoll, setNewPoll] = useState<Poll>({ title: "", deadline: deadline, cost: 0, details: "" });
 
     const onCancel = () => {
-        setNewPoll({ title: "", deadline: "", cost: 0, details: "" });
+        setNewPoll({ title: "", deadline: deadline, cost: 0, details: "" });
         onClose();
     }
 

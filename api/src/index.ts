@@ -76,15 +76,15 @@ app.post("/polls", async (req, res) => {
     title,
     status: 'Open',
     cost,
-    votes: 0,
     deadline,
+    details
   }
 
   try {
     const connection = await getConnection();
-    const query = `INSERT INTO polls (title, status, cost, votes, deadline) VALUES (?, ?, ?, ?, ?);`;
+    const query = `INSERT INTO polls (title, status, cost, deadline, details) VALUES (?, ?, ?, ?, ?);`;
 
-    await connection.execute(query, [newPoll.title, newPoll.status, newPoll.cost, newPoll.votes, newPoll.deadline]);
+    await connection.execute(query, [newPoll.title, newPoll.status, newPoll.cost, newPoll.deadline, newPoll.details]);
 
     res.status(201).json(newPoll);
   } catch (error) {
