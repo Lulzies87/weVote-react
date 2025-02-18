@@ -1,14 +1,29 @@
-import React from "react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { server } from "./services/axiosInstance";
-import { Modal } from "./components/modal";
 import { Poll } from "./types/poll";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "./components/ui/table";
+import { Button } from "./components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "./components/ui/dialog";
+import { NewPollForm } from "./components/NewPollForm";
 
 function App() {
   const [polls, setPolls] = useState<Poll[]>([]);
   const [totalApartments, setTotalApartments] = useState(0);
-  const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
 
   useEffect(() => {
     async function getPolls() {
@@ -26,52 +41,73 @@ function App() {
   }, []);
 
   function arrangeByStatus(polls: Poll[]) {
-    const statuses = ['Open', 'Voted', 'Closed', 'Cancelled'];
+    const statusTypes = ["Open", "Voted", "Closed", "Cancelled"];
 
-    return statuses.map(status => polls.filter(poll => poll.status === status)).flat();
+    return statusTypes
+      .map((status) => polls.filter((poll) => poll.status === status))
+      .flat();
   }
-
-  const openModal = () => setIsModalVisible(true);
-  const closeModal = () => setIsModalVisible(false);
 
   return (
     <>
-      <h1 className='m-4 text-center'>Welcome to weVote!</h1>
+      <h1 className="m-4 text-center">Welcome to weVote!</h1>
 
-      <article className="m-4 p-2 border rounded">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Poll Name</TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead>Cost</TableHead>
+            <TableHead>Votes</TableHead>
+            <TableHead>Deadline</TableHead>
+            <TableHead className="text-right">
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button variant={"outline"} size={"tiny"}>
+                    +
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>New Poll</DialogTitle>
+                    <DialogDescription>
+                      Please insert all poll details:
+                    </DialogDescription>
+                  </DialogHeader>
 
-        <div className="flex justify-between items-center">
-          <h2>Polls</h2>
-          <button className="w-8 h-8" onClick={openModal}>+</button>
-        </div>
-
-        <section className="pt-2 grid grid-cols-5 gap-x-4">
-          {["Poll name", "Status", "Cost", "Votes", "Deadline"].map((title, index) => {
-            return <h3 key={index}>{title}</h3>
-          })}
-
+                  <NewPollForm></NewPollForm>
+                </DialogContent>
+              </Dialog>
+            </TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
           {polls.map((poll) => (
-            <React.Fragment key={poll.id}>
-              <p>
+            <TableRow key={poll.id}>
+              <TableCell className="font-medium">
                 <Link to={`/polls/${poll.id}`}>{poll.title}</Link>
-              </p>
-              <p
+              </TableCell>
+              <TableCell
                 className={`
-                ${poll.status === 'Open' ? 'text-green-500' : ''}
-                ${poll.status === 'Voted' ? 'text-yellow-500' : ''}
-                ${poll.status === 'Closed' ? 'text-purple-500' : ''}
-                ${poll.status === 'Cancelled' ? 'text-red-500' : ''}
-              `}
-              >{poll.status}</p>
-              <p>{poll.cost == 0 ? 'No cost' : poll.cost + ' NIS'}</p>
-              <p>{poll.votes} / {totalApartments}</p>
-              <p>{new Date(poll.deadline).toLocaleDateString('en-GB')}</p>
-            </React.Fragment>
+                ${poll.status === "Open" ? "bg-green-100" : ""}
+                ${poll.status === "Voted" ? "bg-yellow-100" : ""}
+                ${poll.status === "Closed" ? "bg-gray-200" : ""}
+                ${poll.status === "Cancelled" ? "bg-red-100" : ""}
+                `}
+              >
+                {poll.status}
+              </TableCell>
+              <TableCell>{poll.cost == 0 ? "No Cost" : poll.cost}</TableCell>
+              <TableCell>
+                {poll.votes} / {totalApartments}
+              </TableCell>
+              <TableCell>
+                {new Date(poll.deadline).toLocaleDateString("en-GB")}
+              </TableCell>
+            </TableRow>
           ))}
-        </section>
-      </article>
-
-      <Modal isVisible={isModalVisible} onClose={closeModal} />
+        </TableBody>
+      </Table>
     </>
   );
 }
