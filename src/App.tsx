@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { server } from "./services/axiosInstance";
 import { Poll } from "./types/poll";
 import {
@@ -25,9 +25,12 @@ import { useTenant } from "./context/TenantContext";
 function App() {
   const [polls, setPolls] = useState<Poll[]>([]);
   const [totalApartments, setTotalApartments] = useState(0);
-  const { tenant } = useTenant();
+  const { tenant, logout } = useTenant();
+  const navigate = useNavigate();
 
   useEffect(() => {
+    if (!tenant) navigate("/login");
+
     async function getPolls() {
       try {
         const res = await server.get("/polls");
@@ -50,9 +53,19 @@ function App() {
       .flat();
   }
 
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
+
   return (
     <>
-      <h1 className="m-4 text-center">Welcome, {tenant?.fName}</h1>
+      <div className="flex items-baseline">
+        <h1 className="m-4 text-center">Welcome, {tenant?.fName}</h1>
+        <Button className="h-6 w-16" variant={"outline"} onClick={handleLogout}>
+          Logout
+        </Button>
+      </div>
 
       <Table>
         <TableHeader>
