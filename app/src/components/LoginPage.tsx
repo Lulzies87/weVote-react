@@ -19,6 +19,8 @@ import {
 } from "./ui/form";
 import { Input } from "./ui/input";
 import { server } from "@/services/axiosInstance";
+import { useTenant } from "@/context/TenantContext";
+import { useNavigate } from "react-router-dom";
 
 const formSchema = z.object({
   phone: z.string().regex(/^\d{10}$/, "Phone number must be exactly 10 digits"),
@@ -31,11 +33,17 @@ export function LoginPage() {
       phone: "",
     },
   });
+  const { setTenant } = useTenant();
+  const navigate = useNavigate();
 
   async function onSubmit(data: z.infer<typeof formSchema>) {
     try {
-      const tenant = await server.get(`/tenants/${data.phone}`);
-      console.log(tenant.data);
+      const res = await server.post("/login", data);
+
+      setTenant(res.data.tenant);
+      localStorage.setItem("token", res.data.token);
+
+      navigate("/");
     } catch (error) {
       console.error("Failed to fetch tenant data", error);
     }
