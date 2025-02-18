@@ -4,6 +4,7 @@ import cors from "cors";
 import { json } from "body-parser";
 import { getConnection, initConnection } from "./dbConnection";
 import { FieldPacket, RowDataPacket } from "mysql2";
+import jwt from "jsonwebtoken";
 
 const app = express();
 const PORT = process.env.PORT ?? 3000;
@@ -27,11 +28,20 @@ app.get("/polls", async (req, res) => {
     ) v
     ON p.id = v.poll_id;`;
 
-    const [polls]: [RowDataPacket[], FieldPacket[]] = await connection.promise().query(query);
+    const [polls]: [RowDataPacket[], FieldPacket[]] = await connection
+      .promise()
+      .query(query);
 
-    const [apartmentCount]: [RowDataPacket[], FieldPacket[]] = await connection.promise().query("SELECT COUNT(DISTINCT apartment) AS total_apartments FROM tenants");
+    const [apartmentCount]: [RowDataPacket[], FieldPacket[]] = await connection
+      .promise()
+      .query(
+        "SELECT COUNT(DISTINCT apartment) AS total_apartments FROM tenants"
+      );
 
-    res.status(200).json({ polls: polls, totalApartments: apartmentCount[0].total_apartments });
+    res.status(200).json({
+      polls: polls,
+      totalApartments: apartmentCount[0].total_apartments,
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Failed to fetch polls from database." });
@@ -53,16 +63,25 @@ app.get("/polls/:id", async (req, res) => {
     ON p.id = v.poll_id
     WHERE p.id = ?;`;
 
-    const [poll] = await connection.promise().query<RowDataPacket[]>(query, [id]);
+    const [poll] = await connection
+      .promise()
+      .query<RowDataPacket[]>(query, [id]);
 
-    const [apartmentCount]: [RowDataPacket[], FieldPacket[]] = await connection.promise().query("SELECT COUNT(DISTINCT apartment) AS total_apartments FROM tenants");
+    const [apartmentCount]: [RowDataPacket[], FieldPacket[]] = await connection
+      .promise()
+      .query(
+        "SELECT COUNT(DISTINCT apartment) AS total_apartments FROM tenants"
+      );
 
     if (poll.length === 0) {
       res.status(404).json({ error: "Poll not found" });
       return;
     }
 
-    res.status(200).json({ poll: poll[0], totalApartments: apartmentCount[0].total_apartments });
+    res.status(200).json({
+      poll: poll[0],
+      totalApartments: apartmentCount[0].total_apartments,
+    });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Failed to fetch polls from database." });
@@ -74,22 +93,28 @@ app.post("/polls", async (req, res) => {
 
   const newPoll = {
     title,
-    status: 'Open',
+    status: "Open",
     cost,
     deadline,
-    details
-  }
+    details,
+  };
 
   try {
     const connection = await getConnection();
     const query = `INSERT INTO polls (title, status, cost, deadline, details) VALUES (?, ?, ?, ?, ?);`;
 
-    await connection.execute(query, [newPoll.title, newPoll.status, newPoll.cost, newPoll.deadline, newPoll.details]);
+    await connection.execute(query, [
+      newPoll.title,
+      newPoll.status,
+      newPoll.cost,
+      newPoll.deadline,
+      newPoll.details,
+    ]);
 
     res.status(201).json(newPoll);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Failed to create a new poll." })
+    res.status(500).json({ error: "Failed to create a new poll." });
   }
 });
 
@@ -100,9 +125,16 @@ app.post("/polls/:pollID/votes", async (req, res) => {
   try {
     const connection = await getConnection();
 
-    const [apartmentCheck] = await connection.promise().query<RowDataPacket[]>(`SELECT * FROM votes WHERE poll_id = ? AND apartment = ?`, [pollID, apartment]);
+    const [apartmentCheck] = await connection
+      .promise()
+      .query<RowDataPacket[]>(
+        `SELECT * FROM votes WHERE poll_id = ? AND apartment = ?`,
+        [pollID, apartment]
+      );
     if (apartmentCheck.length > 0) {
-      res.status(409).json({ message: "Apartment already voted for this poll." });
+      res
+        .status(409)
+        .json({ message: "Apartment already voted for this poll." });
       return;
     }
 
@@ -112,6 +144,37 @@ app.post("/polls/:pollID/votes", async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Failed to register the vote." });
+  }
+});
+
+app.post("/login", async (req, res) => {
+  const { phone } = req.body;
+
+  try {
+    const connection = getConnection();
+    const query = `SELECT * FROM tenants WHERE phone = ?;`;
+
+    const [tenant]: [RowDataPacket[], FieldPacket[]] = await connection
+      .promise()
+      .query(query, [phone]);
+
+    if (tenant.length === 0) {
+      res.status(404).json({ error: "Phone number is not registered." });
+      return;
+    }
+
+    const token = jwt.sign(
+      { id: tenant[0].id, phone: tenant[0].phone },
+      process.env.JWT_SECRET!,
+      {
+        expiresIn: "7d",
+      }
+    );
+
+    res.status(200).json({ token, tenant: tenant[0] });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to login." });
   }
 });
 
