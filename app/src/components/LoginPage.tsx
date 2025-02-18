@@ -24,7 +24,7 @@ const formSchema = z.object({
 });
 
 export function LoginPage() {
-  const form = useForm({
+  const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       phone: "",
@@ -47,7 +47,10 @@ export function LoginPage() {
 
         <CardContent>
           <Form {...form}>
-            <form className="flex flex-col gap-4" onSubmit={form.handleSubmit(onSubmit)}>
+            <form
+              className="flex flex-col gap-4"
+              onSubmit={form.handleSubmit(onSubmit)}
+            >
               <FormField
                 control={form.control}
                 name="phone"
