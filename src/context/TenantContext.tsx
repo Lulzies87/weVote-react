@@ -14,6 +14,7 @@ interface Tenant {
 interface TenantContextType {
   tenant: Tenant | null;
   setTenant: React.Dispatch<React.SetStateAction<Tenant | null>>;
+  logout: () => void;
 }
 
 const TenantContext = createContext<TenantContextType | undefined>(undefined);
@@ -23,8 +24,13 @@ export const TenantProvider: React.FC<{ children: ReactNode }> = ({
 }) => {
   const [tenant, setTenant] = useState<Tenant | null>(null);
 
+  const logout = () => {
+    localStorage.removeItem("token");
+    setTenant(null);
+  };
+
   return (
-    <TenantContext.Provider value={{ tenant, setTenant }}>
+    <TenantContext.Provider value={{ tenant, setTenant, logout }}>
       {children}
     </TenantContext.Provider>
   );
