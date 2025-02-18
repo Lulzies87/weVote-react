@@ -18,6 +18,7 @@ import {
   FormMessage,
 } from "./ui/form";
 import { Input } from "./ui/input";
+import { server } from "@/services/axiosInstance";
 
 const formSchema = z.object({
   phone: z.string().regex(/^\d{10}$/, "Phone number must be exactly 10 digits"),
@@ -31,8 +32,13 @@ export function LoginPage() {
     },
   });
 
-  function onSubmit(value: z.infer<typeof formSchema>) {
-    console.log(value);
+  async function onSubmit(data: z.infer<typeof formSchema>) {
+    try {
+      const tenant = await server.get(`/tenants/${data.phone}`);
+      console.log(tenant.data);
+    } catch (error) {
+      console.error("Failed to fetch tenant data", error);
+    }
   }
 
   return (
