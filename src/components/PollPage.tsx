@@ -3,9 +3,11 @@ import { useNavigate, useParams } from "react-router-dom";
 import { server } from "../services/axiosInstance";
 import { Poll } from "../types/poll";
 import { Vote } from "../types/vote";
+import { useTenant } from "@/context/TenantContext";
 
 export function PollPage() {
   const { id } = useParams();
+  const { tenant } = useTenant();
   const [poll, setPoll] = useState<Poll | null>(null);
   const [totalApartments, setTotalApartments] = useState(0);
   const [submittedVote, setSubmittedVote] = useState("");
@@ -32,11 +34,11 @@ export function PollPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!id) throw Error("couldn't find ID in params.");
+    if (!id || !tenant) throw Error("couldn't find ID in params.");
 
     const vote: Vote = {
       pollID: Number(id),
-      apartment: 48,
+      apartment: tenant.apartment,
       vote: submittedVote,
     };
 
