@@ -20,10 +20,12 @@ import {
   DialogTrigger,
 } from "./components/ui/dialog";
 import { NewPollForm } from "./components/NewPollForm";
+import { useTenant } from "./context/TenantContext";
 
 function App() {
   const [polls, setPolls] = useState<Poll[]>([]);
   const [totalApartments, setTotalApartments] = useState(0);
+  const { tenant } = useTenant();
 
   useEffect(() => {
     async function getPolls() {
@@ -50,7 +52,7 @@ function App() {
 
   return (
     <>
-      <h1 className="m-4 text-center">Welcome to weVote!</h1>
+      <h1 className="m-4 text-center">Welcome, {tenant?.fName}</h1>
 
       <Table>
         <TableHeader>
