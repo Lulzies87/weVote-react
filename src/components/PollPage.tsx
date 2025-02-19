@@ -76,9 +76,10 @@ export function PollPage() {
     };
 
     try {
-      // await server.post(`/polls/${id}/votes`, vote);
+      await server.post(`/polls/${id}/votes`, vote);
     } catch (error) {
       console.error("Failed to save the vote.", error);
+      return;
     }
 
     toast("Vote registered", {
