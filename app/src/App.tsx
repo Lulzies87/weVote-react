@@ -29,8 +29,6 @@ function App() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!tenant) navigate("/login");
-
     async function getPolls() {
       try {
         const res = await server.get("/polls");
