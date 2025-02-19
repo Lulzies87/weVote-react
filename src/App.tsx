@@ -69,7 +69,7 @@ function App() {
       <Card>
         <CardHeader className="pb-0">
           <div className="flex justify-between items-center">
-            <CardTitle className="text-xl text-primary">Polls</CardTitle>
+            <CardTitle className="font-bold text-2xl text-primary">Polls</CardTitle>
             <Dialog>
               <DialogTrigger asChild>
                 <Button variant={"outline"} size={"tiny"}>
@@ -89,46 +89,50 @@ function App() {
           </div>
         </CardHeader>
         <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Poll Name</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>Cost</TableHead>
-                <TableHead>Votes</TableHead>
-                <TableHead>Deadline</TableHead>
-                <TableHead className="text-right"></TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {polls.map((poll) => (
-                <TableRow key={poll.id}>
-                  <TableCell className="font-medium">
-                    <Link to={`/polls/${poll.id}`}>{poll.title}</Link>
-                  </TableCell>
-                  <TableCell
-                    className={`
+          {polls.length === 0 ? (
+            <p>No polls were taken yet.</p>
+          ) : (
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Poll Name</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Cost</TableHead>
+                  <TableHead>Votes</TableHead>
+                  <TableHead>Deadline</TableHead>
+                  <TableHead className="text-right"></TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {polls.map((poll) => (
+                  <TableRow key={poll.id}>
+                    <TableCell className="font-medium">
+                      <Link to={`/polls/${poll.id}`}>{poll.title}</Link>
+                    </TableCell>
+                    <TableCell
+                      className={`
                 ${poll.status === "Open" ? "bg-green-100" : ""}
                 ${poll.status === "Voted" ? "bg-yellow-100" : ""}
                 ${poll.status === "Closed" ? "bg-gray-200" : ""}
                 ${poll.status === "Cancelled" ? "bg-red-100" : ""}
                 `}
-                  >
-                    {poll.status}
-                  </TableCell>
-                  <TableCell>
-                    {poll.cost == 0 ? "No Cost" : poll.cost}
-                  </TableCell>
-                  <TableCell>
-                    {poll.votes} / {totalApartments}
-                  </TableCell>
-                  <TableCell>
-                    {new Date(poll.deadline).toLocaleDateString("en-GB")}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+                    >
+                      {poll.status}
+                    </TableCell>
+                    <TableCell>
+                      {poll.cost == 0 ? "No Cost" : poll.cost}
+                    </TableCell>
+                    <TableCell>
+                      {poll.votes} / {totalApartments}
+                    </TableCell>
+                    <TableCell>
+                      {new Date(poll.deadline).toLocaleDateString("en-GB")}
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          )}
         </CardContent>
       </Card>
     </>
