@@ -1,16 +1,45 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { server } from "../services/axiosInstance";
 import { Poll } from "../types/poll";
-import { Vote } from "../types/vote";
 import { useTenant } from "@/context/TenantContext";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "./ui/card";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "./ui/form";
+import { useForm } from "react-hook-form";
+import { RadioGroup } from "./ui/radio-group";
+import { RadioGroupItem } from "@radix-ui/react-radio-group";
+import { Button } from "./ui/button";
+import { Vote } from "@/types/vote";
+
+const FormSchema = z.object({
+  submittedVote: z.enum(["yes", "no"], {
+    required_error: "You need to select Yes or No.",
+  }),
+});
 
 export function PollPage() {
   const { id } = useParams();
   const { tenant } = useTenant();
   const [poll, setPoll] = useState<Poll | null>(null);
   const [totalApartments, setTotalApartments] = useState(0);
-  const [submittedVote, setSubmittedVote] = useState("");
+  const form = useForm<z.infer<typeof FormSchema>>({
+    resolver: zodResolver(FormSchema),
+  });
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -27,30 +56,6 @@ export function PollPage() {
     if (id) fetchPoll();
   }, [id]);
 
-  const handleVote = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSubmittedVote(e.target.value);
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!id || !tenant) throw Error("couldn't find ID in params.");
-
-    const vote: Vote = {
-      pollID: Number(id),
-      apartment: tenant.apartment,
-      vote: submittedVote,
-    };
-
-    console.log("Sending user vote to server:", submittedVote);
-
-    try {
-      await server.post(`/polls/${id}/votes`, vote);
-    } catch (error) {
-      console.error("Failed to save the vote", error);
-    }
-  };
-
   {
     if (!poll)
       return (
@@ -60,61 +65,102 @@ export function PollPage() {
       );
   }
 
-  return (
-    <>
-      <h1 className="text-center m-4">{poll.title}</h1>
-      <div className="flex flex-col gap-8">
-        <div className="flex justify-between">
-          <p>Cost: {poll.cost}</p>
-          <p>
-            Votes: {poll.votes} / {totalApartments}
-          </p>
-          <p>Deadline: {new Date(poll.deadline).toLocaleDateString("en-GB")}</p>
-        </div>
+  const onSubmit = async (data: z.infer<typeof FormSchema>) => {
+    if (!id || !tenant) throw Error("Couldn't find poll ID / tenant data.");
 
+    const vote: Vote = {
+      pollID: Number(id),
+      apartment: tenant.apartment,
+      vote: data.submittedVote,
+    };
+
+    try {
+      await server.post(`/polls/${id}/votes`, vote);
+    } catch (error) {
+      console.error("Failed to save the vote.", error);
+    }
+  };
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-4xl font-bold text-center text-primary">
+          {poll.title}
+        </CardTitle>
+        <div className="flex justify-between">
+          <CardDescription>Cost: {poll.cost}</CardDescription>
+          <CardDescription>
+            Votes: {poll.votes} / {totalApartments}
+          </CardDescription>
+          <CardDescription>
+            Deadline: {new Date(poll.deadline).toLocaleDateString("en-GB")}
+          </CardDescription>
+        </div>
+      </CardHeader>
+      <CardContent>
         <p>{poll.details}</p>
 
-        <form className="flex justify-center gap-16">
-          <div className="formField">
-            <input
-              id="voteYes"
-              type="radio"
-              name="vote"
-              value="yes"
-              checked={submittedVote === "yes"}
-              onChange={handleVote}
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)}>
+            <FormField
+              control={form.control}
+              name="submittedVote"
+              render={({ field }) => (
+                <FormItem className="my-6">
+                  <FormControl>
+                    <RadioGroup
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                      className="flex justify-center gap-20"
+                    >
+                      <FormItem className="flex items-center gap-1">
+                        <FormControl>
+                          <RadioGroupItem
+                            className="size-4 rounded-full m-0 border-2 bg-muted data-[state=checked]:bg-primary"
+                            value="yes"
+                          />
+                        </FormControl>
+                        <FormLabel className="font-normal text-md">
+                          Vote Yes
+                        </FormLabel>
+                      </FormItem>
+                      <FormItem className="flex items-center gap-1">
+                        <FormControl>
+                          <RadioGroupItem
+                            className="size-4 rounded-full m-0 border-2 bg-muted data-[state=checked]:bg-primary"
+                            value="no"
+                          />
+                        </FormControl>
+                        <FormLabel className="font-normal text-md">
+                          Vote No
+                        </FormLabel>
+                      </FormItem>
+                    </RadioGroup>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
             />
-            <label htmlFor="voteYes"> Yes</label>
-          </div>
-          <div className="formField">
-            <input
-              id="voteNo"
-              type="radio"
-              name="vote"
-              value="no"
-              checked={submittedVote === "no"}
-              onChange={handleVote}
-            />
-            <label htmlFor="voteNo"> No</label>
-          </div>
-        </form>
 
-        <div className="flex justify-around">
-          <button
-            className="py-1 px-4 rounded destructive"
-            onClick={() => navigate("/")}
-          >
-            Back
-          </button>
-          <button
-            className="py-1 px-4 rounded"
-            disabled={!submittedVote}
-            onClick={handleSubmit}
-          >
-            Save Vote
-          </button>
-        </div>
-      </div>
-    </>
+            <div className="flex justify-around">
+              <Button
+                variant={"destructive"}
+                type="button"
+                onClick={() => navigate("/")}
+              >
+                Back
+              </Button>
+              <Button
+                variant={"default"}
+                type="submit"
+                disabled={!form.formState.isValid}
+              >
+                Submit
+              </Button>
+            </div>
+          </form>
+        </Form>
+      </CardContent>
+    </Card>
   );
 }
