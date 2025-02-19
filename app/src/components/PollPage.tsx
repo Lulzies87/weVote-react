@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import axios from "axios";
 import { server } from "../services/axiosInstance";
 import { useTenant } from "@/context/TenantContext";
 import {
@@ -78,7 +79,20 @@ export function PollPage() {
     try {
       await server.post(`/polls/${id}/votes`, vote);
     } catch (error) {
-      console.error("Failed to save the vote.", error);
+      if (axios.isAxiosError(error) && error.response?.status === 409) {
+        console.error("Vote already registered.");
+        toast("Error", {
+          description: "You have already voted in this poll.",
+          duration: 4000,
+          position: "top-center",
+          style: {
+            color: "var(--destructive)",
+            fontSize: "inherit",
+          },
+        });
+      } else {
+        console.error("Failed to save the vote.", error);
+      }
       return;
     }
 
