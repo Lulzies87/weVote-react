@@ -15,7 +15,7 @@ import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { Textarea } from "./ui/textarea";
 
-const pollSchema = z.object({
+const FormSchema = z.object({
   title: z.string().min(3, "Title must be at least 3 characters long."),
   deadline: z.string().refine((date) => !isNaN(Date.parse(date)), {
     message: "Invalid date format",
@@ -25,8 +25,8 @@ const pollSchema = z.object({
 });
 
 export function NewPollForm() {
-  const form = useForm({
-    resolver: zodResolver(pollSchema),
+  const form = useForm<z.infer<typeof FormSchema>>({
+    resolver: zodResolver(FormSchema),
     defaultValues: {
       title: "",
       deadline: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
@@ -37,7 +37,7 @@ export function NewPollForm() {
     },
   });
 
-  const onSubmit = async (data: z.infer<typeof pollSchema>) => {
+  const onSubmit = async (data: z.infer<typeof FormSchema>) => {
     try {
       await server.post("/polls", data);
       console.log("Poll created successfully!", data);
