@@ -1,4 +1,11 @@
-import React, { createContext, useState, ReactNode, useContext } from "react";
+import { server } from "@/services/axiosInstance";
+import React, {
+  createContext,
+  useState,
+  ReactNode,
+  useContext,
+  useEffect,
+} from "react";
 
 interface Tenant {
   id: number;
@@ -23,6 +30,27 @@ export const TenantProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
   const [tenant, setTenant] = useState<Tenant | null>(null);
+
+  useEffect(() => {
+    const fetchTenant = async () => {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+
+      try {
+        const res = await server.get("/tenants/me", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        setTenant(res.data);
+      } catch (error) {
+        console.error("Failed to fetch tenant:", error);
+        localStorage.removeItem("token");
+        setTenant(null);
+      }
+    };
+
+    fetchTenant();
+  }, []);
 
   const logout = () => {
     localStorage.removeItem("token");
