@@ -5,7 +5,6 @@ import { json } from "body-parser";
 import { getConnection, initConnection } from "./dbConnection";
 import { FieldPacket, RowDataPacket } from "mysql2";
 import jwt, { JwtPayload } from "jsonwebtoken";
-import { decode } from "punycode";
 
 const app = express();
 const PORT = process.env.PORT ?? 3000;
