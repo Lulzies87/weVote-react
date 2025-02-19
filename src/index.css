@@ -115,7 +115,7 @@
   }
 
   h1 {
-    @apply text-[3.2em];
+    @apply text-[2em];
   }
 
   h2 {

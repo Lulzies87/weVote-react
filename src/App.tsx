@@ -21,6 +21,7 @@ import {
 } from "./components/ui/dialog";
 import { NewPollForm } from "./components/NewPollForm";
 import { useTenant } from "./context/TenantContext";
+import { Card, CardContent, CardHeader, CardTitle } from "./components/ui/card";
 
 function App() {
   const [polls, setPolls] = useState<Poll[]>([]);
@@ -58,69 +59,78 @@ function App() {
 
   return (
     <>
-      <div className="flex items-baseline">
-        <h1 className="m-4 text-center">Welcome, {tenant?.fName}</h1>
+      <div className="flex justify-between items-center m-4">
+        <h1>Welcome, {tenant?.fName}</h1>
         <Button className="h-6 w-16" variant={"outline"} onClick={handleLogout}>
           Logout
         </Button>
       </div>
 
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Poll Name</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Cost</TableHead>
-            <TableHead>Votes</TableHead>
-            <TableHead>Deadline</TableHead>
-            <TableHead className="text-right">
-              <Dialog>
-                <DialogTrigger asChild>
-                  <Button variant={"outline"} size={"tiny"}>
-                    +
-                  </Button>
-                </DialogTrigger>
-                <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle>New Poll</DialogTitle>
-                    <DialogDescription>
-                      Please insert all poll details:
-                    </DialogDescription>
-                  </DialogHeader>
-
-                  <NewPollForm></NewPollForm>
-                </DialogContent>
-              </Dialog>
-            </TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {polls.map((poll) => (
-            <TableRow key={poll.id}>
-              <TableCell className="font-medium">
-                <Link to={`/polls/${poll.id}`}>{poll.title}</Link>
-              </TableCell>
-              <TableCell
-                className={`
+      <Card>
+        <CardHeader className="pb-0">
+          <div className="flex justify-between items-center">
+            <CardTitle className="text-xl text-primary">Polls</CardTitle>
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button variant={"outline"} size={"tiny"}>
+                  +
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>New Poll</DialogTitle>
+                  <DialogDescription>
+                    Please insert all poll details:
+                  </DialogDescription>
+                </DialogHeader>
+                <NewPollForm></NewPollForm>
+              </DialogContent>
+            </Dialog>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Poll Name</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Cost</TableHead>
+                <TableHead>Votes</TableHead>
+                <TableHead>Deadline</TableHead>
+                <TableHead className="text-right"></TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {polls.map((poll) => (
+                <TableRow key={poll.id}>
+                  <TableCell className="font-medium">
+                    <Link to={`/polls/${poll.id}`}>{poll.title}</Link>
+                  </TableCell>
+                  <TableCell
+                    className={`
                 ${poll.status === "Open" ? "bg-green-100" : ""}
                 ${poll.status === "Voted" ? "bg-yellow-100" : ""}
                 ${poll.status === "Closed" ? "bg-gray-200" : ""}
                 ${poll.status === "Cancelled" ? "bg-red-100" : ""}
                 `}
-              >
-                {poll.status}
-              </TableCell>
-              <TableCell>{poll.cost == 0 ? "No Cost" : poll.cost}</TableCell>
-              <TableCell>
-                {poll.votes} / {totalApartments}
-              </TableCell>
-              <TableCell>
-                {new Date(poll.deadline).toLocaleDateString("en-GB")}
-              </TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+                  >
+                    {poll.status}
+                  </TableCell>
+                  <TableCell>
+                    {poll.cost == 0 ? "No Cost" : poll.cost}
+                  </TableCell>
+                  <TableCell>
+                    {poll.votes} / {totalApartments}
+                  </TableCell>
+                  <TableCell>
+                    {new Date(poll.deadline).toLocaleDateString("en-GB")}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
     </>
   );
 }
