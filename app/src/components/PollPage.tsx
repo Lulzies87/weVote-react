@@ -62,8 +62,8 @@ export function PollPage() {
 
   return (
     <>
-      <h1 className="text-center">{poll.title}</h1>
-      <div className="max-w-[800px] flex flex-col gap-8">
+      <h1 className="text-center m-4">{poll.title}</h1>
+      <div className="flex flex-col gap-8">
         <div className="flex justify-between">
           <p>Cost: {poll.cost}</p>
           <p>
