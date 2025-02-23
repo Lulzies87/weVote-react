@@ -50,27 +50,38 @@ app.get("/tenants/me", async (req, res) => {
 app.get("/polls", async (req, res) => {
   try {
     const connection = await getConnection();
-    const query = `SELECT p.*, COALESCE(v.votes, 0) AS votes
-    FROM polls p
-    LEFT JOIN (
-      SELECT poll_id, COUNT(*) AS votes
-      FROM votes
-      GROUP BY poll_id
-    ) v
-    ON p.id = v.poll_id;`;
-
-    const [polls]: [RowDataPacket[], FieldPacket[]] = await connection
-      .promise()
-      .query(query);
-
     const [apartmentCount]: [RowDataPacket[], FieldPacket[]] = await connection
       .promise()
       .query(
         "SELECT COUNT(DISTINCT apartment) AS total_apartments FROM tenants"
       );
 
+    const [polls]: [RowDataPacket[], FieldPacket[]] = await connection
+      .promise()
+      .query("SELECT * FROM polls;");
+
+    const [votes]: [RowDataPacket[], FieldPacket[]] = await connection
+      .promise()
+      .query("SELECT * FROM votes;");
+
+    const pollVotes: Record<number, number[]> = votes.reduce(
+      (acc: Record<number, number[]>, vote) => {
+        if (!acc[vote.poll_id]) {
+          acc[vote.poll_id] = [];
+        }
+        acc[vote.poll_id].push(vote.apartment);
+        return acc;
+      },
+      {}
+    );
+
+    const updatedPolls = polls.map((poll) => ({
+      ...poll,
+      votedApartments: pollVotes[poll.id] || [],
+    }));
+
     res.status(200).json({
-      polls: polls,
+      polls: updatedPolls,
       totalApartments: apartmentCount[0].total_apartments,
     });
   } catch (error) {
