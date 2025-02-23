@@ -81,22 +81,30 @@ export function PollPage() {
     } catch (error) {
       if (axios.isAxiosError(error) && error.response?.status === 409) {
         console.error("Vote already registered.");
-        toast("Error", {
+        toast(<h4 className="destructive">Error</h4>, {
           description: "You have already voted in this poll.",
           duration: 4000,
           position: "top-center",
           style: {
-            color: "var(--destructive)",
             fontSize: "inherit",
           },
         });
       } else {
+        toast(<h4 className="destructive">Error</h4>, {
+          description: "Failed to submit vote. Please try again later.",
+          duration: 4000,
+          position: "top-center",
+          style: {
+            fontSize: "inherit",
+          },
+        });
+        
         console.error("Failed to save the vote.", error);
       }
       return;
     }
 
-    toast("Vote registered", {
+    toast(<h4>Vote registered!</h4>, {
       description: (
         <>
           You voted <strong>{vote.vote.toLocaleUpperCase()}</strong> for{" "}
@@ -106,7 +114,6 @@ export function PollPage() {
       duration: 4000,
       position: "top-center",
       style: {
-        color: "var(--primary)",
         fontSize: "inherit",
       },
     });
