@@ -14,6 +14,17 @@ import {
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { Textarea } from "./ui/textarea";
+import { toast } from "sonner";
+import { Toaster } from "./ui/sonner";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "./ui/dialog";
+import { useState } from "react";
 
 const FormSchema = z.object({
   title: z.string().min(3, "Title must be at least 3 characters long."),
@@ -25,6 +36,7 @@ const FormSchema = z.object({
 });
 
 export function NewPollForm() {
+  const [open, setOpen] = useState(false);
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
@@ -40,78 +52,136 @@ export function NewPollForm() {
   const onSubmit = async (data: z.infer<typeof FormSchema>) => {
     try {
       await server.post("/polls", data);
-      console.log("Poll created successfully!", data);
       form.reset();
+
+      toast(<h4>Poll created!</h4>, {
+        description: (
+          <>
+            <strong>{data.title}</strong> - poll was created and is now open for
+            votes!
+          </>
+        ),
+        duration: 4000,
+        position: "top-center",
+        style: {
+          fontSize: "inherit",
+        },
+      });
+
+      setOpen(false);
     } catch (error) {
-      console.error("Failed to submit form", error);
+      toast(<h4 className="destructive">Error</h4>, {
+        description: "Failed to create poll. Please try again later.",
+        duration: 4000,
+        position: "top-center",
+        style: {
+          fontSize: "inherit",
+        },
+      });
+
+      console.error("Failed to create form.", error);
     }
   };
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        <FormField
-          control={form.control}
-          name="title"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Poll Title</FormLabel>
-              <FormControl>
-                <Input placeholder="Enter poll title" {...field} />
-              </FormControl>
-              <FormDescription />
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+    <>
+      <Toaster />
 
-        <FormField
-          control={form.control}
-          name="deadline"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Deadline</FormLabel>
-              <FormControl>
-                <Input type="date" {...field} />
-              </FormControl>
-              <FormDescription>The last day tenants can vote</FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogTrigger asChild>
+          <Button variant={"outline"} size={"tiny"}>
+            +
+          </Button>
+        </DialogTrigger>
 
-        <FormField
-          control={form.control}
-          name="cost"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Cost</FormLabel>
-              <FormControl>
-                <Input type="number" placeholder="0" {...field} />
-              </FormControl>
-              <FormDescription>The cost for the whole building</FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>New Poll</DialogTitle>
+            <DialogDescription>
+              Please insert all poll details:
+            </DialogDescription>
+          </DialogHeader>
 
-        <FormField
-          control={form.control}
-          name="details"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Details</FormLabel>
-              <FormControl>
-                <Textarea placeholder="Optional poll details..." {...field} />
-              </FormControl>
-              <FormDescription />
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+              <FormField
+                control={form.control}
+                name="title"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Poll Title</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Enter poll title" {...field} />
+                    </FormControl>
+                    <FormDescription />
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-        <Button type="submit">Create Poll</Button>
-      </form>
-    </Form>
+              <FormField
+                control={form.control}
+                name="deadline"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Deadline</FormLabel>
+                    <FormControl>
+                      <Input type="date" {...field} />
+                    </FormControl>
+                    <FormDescription>
+                      The last day tenants can vote
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="cost"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Cost</FormLabel>
+                    <FormControl>
+                      <Input type="number" placeholder="0" {...field} />
+                    </FormControl>
+                    <FormDescription>
+                      The cost for the whole building
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="details"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Details</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder="Optional poll details..."
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormDescription />
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <Button
+                className="block mx-auto"
+                type="submit"
+                disabled={!form.formState.isValid}
+              >
+                Create Poll
+              </Button>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
