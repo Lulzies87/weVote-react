@@ -25,8 +25,7 @@ function App() {
     async function getPolls() {
       try {
         const res = await server.get("/polls");
-        const arrangedPolls = arrangeByStatus(res.data.polls);
-        setPolls(arrangedPolls);
+        setPolls(res.data.polls);
         setTotalApartments(res.data.totalApartments);
       } catch (error) {
         console.error("Failed to fetch polls", error);
@@ -36,12 +35,25 @@ function App() {
     getPolls();
   }, []);
 
-  function arrangeByStatus(polls: Poll[]) {
-    const statusTypes = ["Open", "Voted", "Closed", "Cancelled"];
+  function getPollStatus(poll: Poll) {
+    let status = "Open";
+    let color = "bg-yellow-100";
 
-    return statusTypes
-      .map((status) => polls.filter((poll) => poll.status === status))
-      .flat();
+    if (!poll.is_active) {
+      status = "Cancelled";
+      color = "bg-red-100";
+    } else if (
+      new Date(poll.deadline).setHours(0, 0, 0, 0) <
+      new Date().setHours(0, 0, 0, 0)
+    ) {
+      status = "Closed";
+      color = "bg-gray-100";
+    } else if (poll.votedApartments?.includes(tenant!.apartment)) {
+      status = "Voted";
+      color = "bg-green-100";
+    }
+
+    return { status, color };
   }
 
   const handleLogout = () => {
@@ -89,21 +101,14 @@ function App() {
                     <TableCell className="font-medium">
                       <Link to={`/polls/${poll.id}`}>{poll.title}</Link>
                     </TableCell>
-                    <TableCell
-                      className={`
-                ${poll.status === "Open" ? "bg-green-100" : ""}
-                ${poll.status === "Voted" ? "bg-yellow-100" : ""}
-                ${poll.status === "Closed" ? "bg-gray-200" : ""}
-                ${poll.status === "Cancelled" ? "bg-red-100" : ""}
-                `}
-                    >
-                      {poll.status}
+                    <TableCell className={`${getPollStatus(poll).color}`}>
+                      {getPollStatus(poll).status}
                     </TableCell>
                     <TableCell>
                       {poll.cost == 0 ? "No Cost" : poll.cost}
                     </TableCell>
                     <TableCell>
-                      {poll.votes} / {totalApartments}
+                      {poll.votedApartments?.length} / {totalApartments}
                     </TableCell>
                     <TableCell>
                       {new Date(poll.deadline).toLocaleDateString("en-GB")}
