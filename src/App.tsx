@@ -11,14 +11,6 @@ import {
   TableRow,
 } from "./components/ui/table";
 import { Button } from "./components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "./components/ui/dialog";
 import { NewPollForm } from "./components/NewPollForm";
 import { useTenant } from "./context/TenantContext";
 import { Card, CardContent, CardHeader, CardTitle } from "./components/ui/card";
@@ -69,25 +61,13 @@ function App() {
       <Card>
         <CardHeader className="pb-0">
           <div className="flex justify-between items-center">
-            <CardTitle className="font-bold text-2xl text-primary">Polls</CardTitle>
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button variant={"outline"} size={"tiny"}>
-                  +
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>New Poll</DialogTitle>
-                  <DialogDescription>
-                    Please insert all poll details:
-                  </DialogDescription>
-                </DialogHeader>
-                <NewPollForm></NewPollForm>
-              </DialogContent>
-            </Dialog>
+            <CardTitle className="font-bold text-2xl text-primary">
+              Polls
+            </CardTitle>
+            <NewPollForm />
           </div>
         </CardHeader>
+
         <CardContent>
           {polls.length === 0 ? (
             <p>No polls were taken yet.</p>

@@ -126,6 +126,14 @@
     @apply text-xl;
   }
 
+  h4 {
+    @apply font-bold;
+  }
+
+  h4.destructive {
+    @apply text-destructive;
+  }
+
   a {
     @apply transition-colors duration-300;
   }
