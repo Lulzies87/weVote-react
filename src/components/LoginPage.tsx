@@ -21,6 +21,9 @@ import { Input } from "./ui/input";
 import { server } from "@/services/axiosInstance";
 import { useTenant } from "@/context/TenantContext";
 import { useNavigate } from "react-router-dom";
+import { Toaster } from "./ui/sonner";
+import { toast } from "sonner";
+import axios from "axios";
 
 const formSchema = z.object({
   phone: z.string().regex(/^\d{10}$/, "Phone number must be exactly 10 digits"),
@@ -45,13 +48,25 @@ export function LoginPage() {
 
       navigate("/");
     } catch (error) {
-      console.error("Failed to fetch tenant data", error);
+      if (axios.isAxiosError(error) && error.response) {
+        toast(<h4 className="destructive">Error {error.response.status}</h4>, {
+          description: error.response.data.error,
+          duration: 4000,
+          position: "top-center",
+          style: {
+            fontSize: "inherit",
+          },
+        });
+
+        console.error(error);
+      }
     }
   }
 
   return (
     <>
-      <Card>
+      <Toaster />
+      <Card className="max-w-sm mx-auto">
         <CardHeader>
           <CardTitle className="text-3xl font-bold">Login</CardTitle>
           <CardDescription>
