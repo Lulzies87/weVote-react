@@ -216,7 +216,7 @@ app.post("/login", async (req, res) => {
     res.status(200).json({ token, tenant: tenant[0] });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Failed to login." });
+    res.status(500).json({ error: "Internal server error. Please contact an administrator." });
   }
 });
 
