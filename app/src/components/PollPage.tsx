@@ -130,7 +130,7 @@ export function PollPage() {
           <div className="flex justify-between">
             <CardDescription>Cost: {poll.cost}</CardDescription>
             <CardDescription>
-              Votes: {poll.votes} / {totalApartments}
+              Votes: {poll.votedApartments?.length} / {totalApartments}
             </CardDescription>
             <CardDescription>
               Deadline: {new Date(poll.deadline).toLocaleDateString("en-GB")}
