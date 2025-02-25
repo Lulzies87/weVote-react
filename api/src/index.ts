@@ -147,7 +147,9 @@ app.post("/polls", async (req, res) => {
     res.status(201).json(newPoll);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Failed to create a new poll." });
+    res.status(500).json({
+      error: "Failed to create a new poll. Please contact an administrator.",
+    });
   }
 });
 
