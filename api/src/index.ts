@@ -117,7 +117,10 @@ app.get("/polls/:id", async (req, res) => {
     res.status(200).json({ totalApartments, poll: updatedPoll });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Failed to fetch polls from database." });
+    res.status(500).json({
+      error:
+        "Failed to fetch poll from database. Please contact an administrator.",
+    });
   }
 });
 

@@ -38,6 +38,10 @@ export function PollPage() {
   const { id } = useParams();
   const { tenant } = useTenant();
   const [poll, setPoll] = useState<Poll | null>(null);
+  const [errorData, setErrorData] = useState<{
+    status: number;
+    message: string;
+  } | null>(null);
   const [totalApartments, setTotalApartments] = useState(0);
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -51,21 +55,40 @@ export function PollPage() {
         setPoll(res.data.poll);
         setTotalApartments(res.data.totalApartments);
       } catch (error) {
-        console.error("Failed to fetch poll data:", error);
+        if (axios.isAxiosError(error) && error.response) {
+          setErrorData({
+            status: error.response.status,
+            message: error.response.data.error,
+          });
+        } else {
+          setErrorData({
+            status: 0,
+            message:
+              "An unknown error occured, please contact an administrator.",
+          });
+
+          console.error(error);
+        }
       }
     }
 
     if (id) fetchPoll();
   }, [id]);
 
-  {
-    if (!poll)
-      return (
-        <>
-          <h1>Poll wasn't found</h1>
-        </>
-      );
+  if (errorData) {
+    return (
+      <div className="text-center">
+        <h1>
+          {errorData.status === 0
+            ? `Unknown Error`
+            : `Error ${errorData.status}`}
+        </h1>
+        <p>{errorData.message}</p>
+      </div>
+    );
   }
+
+  if (!poll) return <h1>Loading poll data...</h1>;
 
   const onSubmit = async (data: z.infer<typeof FormSchema>) => {
     if (!id || !tenant) throw Error("Couldn't find poll ID / tenant data.");
@@ -98,7 +121,7 @@ export function PollPage() {
             fontSize: "inherit",
           },
         });
-        
+
         console.error("Failed to save the vote.", error);
       }
       return;
