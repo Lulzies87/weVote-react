@@ -1,9 +1,9 @@
 export interface Vote {
   id: number;
-  poll_id: number;
+  pollId: number;
   apartment: number;
   vote: string;
-  created_at: string;
+  createdAt: string;
 }
 
 export interface Poll {
@@ -11,7 +11,7 @@ export interface Poll {
   title: string;
   cost: string;
   deadline: string;
-  created_at: string;
+  createdAt: string;
   details: string;
-  is_active: boolean;
+  isActive: boolean;
 }

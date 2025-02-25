@@ -41,7 +41,7 @@ function App() {
     let status = "Open";
     let color = "bg-yellow-100";
 
-    if (!poll.is_active) {
+    if (!poll.isActive) {
       status = "Cancelled";
       color = "bg-red-100";
     } else if (
