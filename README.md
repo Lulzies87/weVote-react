@@ -80,7 +80,7 @@ In the app folder:
     email VARCHAR(255) NOT NULL,
     phone VARCHAR(10) NOT NULL,
     apartment TINYINT UNSIGNED NOT NULL CHECK (apartment BETWEEN 1 AND 90),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);
+    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP);
 
     CREATE TABLE IF NOT EXISTS polls (
     id INT auto_increment PRIMARY KEY,
@@ -88,16 +88,16 @@ In the app folder:
     cost DECIMAL(10,2) NOT NULL,
     deadline DATE NOT NULL,
     details TEXT,
-    is_active BOOLEAN NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);
+    isActive BOOLEAN NOT NULL,
+    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP);
 
     CREATE TABLE IF NOT EXISTS votes (
     id INT auto_increment PRIMARY KEY,
-    poll_id INT NOT NULL,
+    pollId INT NOT NULL,
     apartment TINYINT UNSIGNED NOT NULL CHECK (apartment BETWEEN 1 AND 80),
     vote VARCHAR(3) NOT NULL CHECK (vote IN ('yes', 'no')),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (poll_id) REFERENCES polls(id) ON DELETE CASCADE);
+    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (pollId) REFERENCES polls(id) ON DELETE CASCADE);
 ```
 
 7. Set up environment variables:

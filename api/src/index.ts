@@ -66,10 +66,10 @@ app.get("/polls", async (_, res) => {
 
     const pollVotes: Record<number, number[]> = votes.reduce(
       (acc: Record<number, number[]>, vote) => {
-        if (!acc[vote.poll_id]) {
-          acc[vote.poll_id] = [];
+        if (!acc[vote.pollId]) {
+          acc[vote.pollId] = [];
         }
-        acc[vote.poll_id].push(vote.apartment);
+        acc[vote.pollId].push(vote.apartment);
         return acc;
       },
       {}
@@ -112,7 +112,7 @@ app.get("/polls/:id", async (req, res) => {
 
     const [votes]: [RowDataPacket[], FieldPacket[]] = await connection
       .promise()
-      .query("SELECT apartment FROM votes WHERE poll_id = ?", [id]);
+      .query("SELECT apartment FROM votes WHERE pollId = ?", [id]);
 
     const votedApartments = votes.map((vote) => vote.apartment);
 
@@ -130,22 +130,22 @@ app.post("/polls", async (req, res) => {
 
   const newPoll = {
     title,
-    status: "Open",
     cost,
     deadline,
     details,
+    isActive: true,
   };
 
   try {
     const connection = await getConnection();
-    const query = `INSERT INTO polls (title, status, cost, deadline, details) VALUES (?, ?, ?, ?, ?);`;
+    const query = `INSERT INTO polls (title, cost, deadline, details, isActive) VALUES (?, ?, ?, ?, ?);`;
 
     await connection.execute(query, [
       newPoll.title,
-      newPoll.status,
       newPoll.cost,
       newPoll.deadline,
       newPoll.details,
+      newPoll.isActive,
     ]);
 
     res.status(201).json(newPoll);
@@ -165,7 +165,7 @@ app.post("/polls/:pollID/votes", async (req, res) => {
     const [apartmentCheck] = await connection
       .promise()
       .query<RowDataPacket[]>(
-        `SELECT * FROM votes WHERE poll_id = ? AND apartment = ?`,
+        `SELECT * FROM votes WHERE pollId = ? AND apartment = ?`,
         [pollID, apartment]
       );
     if (apartmentCheck.length > 0) {
@@ -175,7 +175,7 @@ app.post("/polls/:pollID/votes", async (req, res) => {
       return;
     }
 
-    const query = `INSERT INTO votes (poll_id, apartment, vote) VALUES (?, ?, ?);`;
+    const query = `INSERT INTO votes (pollId, apartment, vote) VALUES (?, ?, ?);`;
     await connection.execute(query, [pollID, apartment, vote]);
     res.status(201).json({ message: "Vote registered successfully!" });
   } catch (error) {
