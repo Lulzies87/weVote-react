@@ -1,5 +1,6 @@
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import axios from "axios";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { server } from "@/services/axiosInstance";
 import {
@@ -70,16 +71,28 @@ export function NewPollForm() {
 
       setOpen(false);
     } catch (error) {
-      toast(<h4 className="destructive">Error</h4>, {
-        description: "Failed to create poll. Please try again later.",
-        duration: 4000,
-        position: "top-center",
-        style: {
-          fontSize: "inherit",
-        },
-      });
+      if (axios.isAxiosError(error) && error.response) {
+        toast(<h4 className="destructive">Error {error.response.status}</h4>, {
+          description: error.response.data.error,
+          duration: 4000,
+          position: "top-center",
+          style: {
+            fontSize: "inherit",
+          },
+        });
+      } else {
+        toast(<h4 className="destructive">Unknown Error</h4>, {
+          description:
+            "An unknown error occurred. Please contact an administrator.",
+          duration: 4000,
+          position: "top-center",
+          style: {
+            fontSize: "inherit",
+          },
+        });
 
-      console.error("Failed to create form.", error);
+        console.error(error);
+      }
     }
   };
 
