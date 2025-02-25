@@ -5,7 +5,7 @@ export interface Poll {
   cost: number;
   deadline: string;
   details: string;
-  created_at?: Date;
+  createdAt?: Date;
   votedApartments?: number[];
-  is_active: boolean;
+  isActive: boolean;
 }

@@ -15,7 +15,7 @@ interface Tenant {
   email: string;
   phone: string;
   apartment: number;
-  created_at: string;
+  createdAt: string;
 }
 
 interface TenantContextType {
