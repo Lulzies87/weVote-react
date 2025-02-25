@@ -101,6 +101,24 @@ export function PollPage() {
 
     try {
       await server.post(`/polls/${id}/votes`, vote);
+
+      toast(<h4>Vote registered!</h4>, {
+        description: (
+          <>
+            You voted <strong>{vote.vote.toLocaleUpperCase()}</strong> for{" "}
+            {poll.title}
+          </>
+        ),
+        duration: 1800,
+        position: "top-center",
+        style: {
+          fontSize: "inherit",
+        },
+      });
+
+      setTimeout(() => {
+        navigate("/");
+      }, 2100);
     } catch (error) {
       if (axios.isAxiosError(error) && error.response?.status === 409) {
         console.error("Vote already registered.");
@@ -126,20 +144,6 @@ export function PollPage() {
       }
       return;
     }
-
-    toast(<h4>Vote registered!</h4>, {
-      description: (
-        <>
-          You voted <strong>{vote.vote.toLocaleUpperCase()}</strong> for{" "}
-          {poll.title}
-        </>
-      ),
-      duration: 4000,
-      position: "top-center",
-      style: {
-        fontSize: "inherit",
-      },
-    });
   };
 
   return (
