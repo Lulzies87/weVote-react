@@ -57,9 +57,19 @@ export function LoginPage() {
             fontSize: "inherit",
           },
         });
-
-        console.error(error);
+      } else {
+        toast(<h4 className="destructive">Unkonown Error</h4>, {
+          description:
+            "An unknown error occurred. Please contact an administrator.",
+          duration: 4000,
+          position: "top-center",
+          style: {
+            fontSize: "inherit",
+          },
+        });
       }
+
+      console.error(error);
     }
   }
 
