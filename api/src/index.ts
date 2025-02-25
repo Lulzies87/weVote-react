@@ -47,7 +47,7 @@ app.get("/tenants/me", async (req, res) => {
   }
 });
 
-app.get("/polls", async (req, res) => {
+app.get("/polls", async (_, res) => {
   try {
     const connection = await getConnection();
     const [apartmentCount]: [RowDataPacket[], FieldPacket[]] = await connection
@@ -95,35 +95,30 @@ app.get("/polls/:id", async (req, res) => {
 
   try {
     const connection = await getConnection();
-    const query = `SELECT p.*, COALESCE(v.votes, 0) AS votes
-    FROM polls p
-    LEFT JOIN (
-      SELECT poll_id, COUNT(*) AS votes
-      FROM votes
-      GROUP BY poll_id
-    ) v
-    ON p.id = v.poll_id
-    WHERE p.id = ?;`;
 
-    const [poll] = await connection
+    const [[{ count: totalApartments }]]: [RowDataPacket[], FieldPacket[]] =
+      await connection
+        .promise()
+        .query("SELECT COUNT(DISTINCT apartment) AS count FROM tenants");
+
+    const [[poll]]: [RowDataPacket[], FieldPacket[]] = await connection
       .promise()
-      .query<RowDataPacket[]>(query, [id]);
+      .query("SELECT * FROM polls WHERE id = ?", [id]);
 
-    const [apartmentCount]: [RowDataPacket[], FieldPacket[]] = await connection
-      .promise()
-      .query(
-        "SELECT COUNT(DISTINCT apartment) AS total_apartments FROM tenants"
-      );
-
-    if (poll.length === 0) {
-      res.status(404).json({ error: "Poll not found" });
+    if (!poll) {
+      res.status(404).json({ error: "Poll not found." });
       return;
     }
 
-    res.status(200).json({
-      poll: poll[0],
-      totalApartments: apartmentCount[0].total_apartments,
-    });
+    const [votes]: [RowDataPacket[], FieldPacket[]] = await connection
+      .promise()
+      .query("SELECT apartment FROM votes WHERE poll_id = ?", [id]);
+
+    const votedApartments = votes.map((vote) => vote.apartment);
+
+    const updatedPoll = { ...poll, votedApartments };
+
+    res.status(200).json({ totalApartments, poll: updatedPoll });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Failed to fetch polls from database." });
@@ -216,7 +211,9 @@ app.post("/login", async (req, res) => {
     res.status(200).json({ token, tenant: tenant[0] });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Internal server error. Please contact an administrator." });
+    res.status(500).json({
+      error: "Internal server error. Please contact an administrator.",
+    });
   }
 });
 
