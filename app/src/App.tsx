@@ -36,6 +36,8 @@ function App() {
   }, []);
 
   function getPollStatus(poll: Poll) {
+    if (!tenant) return { status: "Unknown", color: "bg-gray-100" };
+
     let status = "Open";
     let color = "bg-yellow-100";
 
