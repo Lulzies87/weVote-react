@@ -12,10 +12,6 @@ const PORT = process.env.PORT ?? 3000;
 app.use(cors());
 app.use(json());
 
-app.get("/check", (_, res) => {
-  res.status(200).json({ message: "Hello" });
-});
-
 app.get("/tenants/me", async (req, res) => {
   const token = req.headers.authorization?.split(" ")[1];
 
