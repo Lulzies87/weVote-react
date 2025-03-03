@@ -74,10 +74,7 @@ export function LoginPage() {
   }
 
   return (
-    <div
-      className="h-screen w-screen bg-cover bg-center flex items-center justify-center"
-      style={{ backgroundImage: "url('/background.jpg')" }}
-    >
+    <div>
       <Toaster />
       <Card className="max-w-sm mx-auto bg-white/90">
         <CardHeader>

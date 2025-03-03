@@ -2,7 +2,7 @@ import { Card, CardHeader, CardTitle } from "./ui/card";
 
 export function CancelledPollMessage() {
   return (
-    <Card className="my-4">
+    <Card className="my-4 bg-white/90">
       <CardHeader>
         <CardTitle>
           <h2 className="text-center text-destructive">

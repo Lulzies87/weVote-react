@@ -30,7 +30,7 @@ export function VoteCard({
   onSubmit,
 }: VoteCardProps) {
   return (
-    <Card className="relative h-[360px] w-1/2 flex flex-col items-center justify-center">
+    <Card className="relative h-[360px] w-1/2 flex flex-col items-center justify-center bg-white/90">
       <CardHeader className="absolute top-0 w-full text-center">
         <CardTitle>
           <h2>Your Vote</h2>
