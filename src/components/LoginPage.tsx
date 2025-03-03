@@ -74,9 +74,12 @@ export function LoginPage() {
   }
 
   return (
-    <>
+    <div
+      className="h-screen w-screen bg-cover bg-center flex items-center justify-center"
+      style={{ backgroundImage: "url('/background.jpg')" }}
+    >
       <Toaster />
-      <Card className="max-w-sm mx-auto">
+      <Card className="max-w-sm mx-auto bg-white/90">
         <CardHeader>
           <CardTitle className="text-3xl font-bold">Login</CardTitle>
           <CardDescription>
@@ -110,6 +113,6 @@ export function LoginPage() {
           </Form>
         </CardContent>
       </Card>
-    </>
+    </div>
   );
 }
