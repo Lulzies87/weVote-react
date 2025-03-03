@@ -14,6 +14,7 @@ import { Button } from "./components/ui/button";
 import { NewPollForm } from "./components/NewPollForm";
 import { useTenant } from "./context/TenantContext";
 import { Card, CardContent, CardHeader, CardTitle } from "./components/ui/card";
+import { getPollStatus } from "./functions/functions";
 
 function App() {
   const [polls, setPolls] = useState<Poll[]>([]);
@@ -22,7 +23,7 @@ function App() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    async function getPolls() {
+    async function fetchPolls() {
       try {
         const res = await server.get("/polls");
         setPolls(res.data.polls);
@@ -32,31 +33,8 @@ function App() {
       }
     }
 
-    getPolls();
+    fetchPolls();
   }, []);
-
-  function getPollStatus(poll: Poll) {
-    if (!tenant) return { status: "Unknown", color: "bg-gray-100" };
-
-    let status = "Open";
-    let color = "bg-yellow-100";
-
-    if (!poll.isActive) {
-      status = "Cancelled";
-      color = "bg-red-100";
-    } else if (
-      new Date(poll.deadline).setHours(0, 0, 0, 0) <
-      new Date().setHours(0, 0, 0, 0)
-    ) {
-      status = "Closed";
-      color = "bg-gray-100";
-    } else if (poll.votedApartments?.includes(tenant!.apartment)) {
-      status = "Voted";
-      color = "bg-green-100";
-    }
-
-    return { status, color };
-  }
 
   const handleLogout = () => {
     logout();
@@ -98,25 +76,29 @@ function App() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {polls.map((poll) => (
-                  <TableRow key={poll.id}>
-                    <TableCell className="font-medium">
-                      <Link to={`/polls/${poll.id}`}>{poll.title}</Link>
-                    </TableCell>
-                    <TableCell className={`${getPollStatus(poll).color}`}>
-                      {getPollStatus(poll).status}
-                    </TableCell>
-                    <TableCell>
-                      {poll.cost == 0 ? "No Cost" : poll.cost}
-                    </TableCell>
-                    <TableCell>
-                      {poll.votedApartments?.length} / {totalApartments}
-                    </TableCell>
-                    <TableCell>
-                      {new Date(poll.deadline).toLocaleDateString("en-GB")}
-                    </TableCell>
-                  </TableRow>
-                ))}
+                {polls.map((poll) => {
+                  const status = getPollStatus(poll, tenant);
+
+                  return (
+                    <TableRow key={poll.id}>
+                      <TableCell className="font-medium">
+                        <Link to={`/polls/${poll.id}`}>{poll.title}</Link>
+                      </TableCell>
+                      <TableCell className={status.color}>
+                        {status.status}
+                      </TableCell>
+                      <TableCell>
+                        {poll.cost == 0 ? "No Cost" : poll.cost}
+                      </TableCell>
+                      <TableCell>
+                        {poll.votes?.length} / {totalApartments}
+                      </TableCell>
+                      <TableCell>
+                        {new Date(poll.deadline).toLocaleDateString("en-GB")}
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
               </TableBody>
             </Table>
           )}

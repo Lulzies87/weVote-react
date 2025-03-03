@@ -6,6 +6,6 @@ export interface Poll {
   deadline: string;
   details: string;
   createdAt?: Date;
-  votedApartments?: number[];
+  votes?: { apartment: number; vote: string }[];
   isActive: boolean;
 }
