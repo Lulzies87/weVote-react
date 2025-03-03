@@ -58,22 +58,13 @@ app.get("/polls", async (_, res) => {
 
     const [votes]: [RowDataPacket[], FieldPacket[]] = await connection
       .promise()
-      .query("SELECT * FROM votes;");
-
-    const pollVotes: Record<number, number[]> = votes.reduce(
-      (acc: Record<number, number[]>, vote) => {
-        if (!acc[vote.pollId]) {
-          acc[vote.pollId] = [];
-        }
-        acc[vote.pollId].push(vote.apartment);
-        return acc;
-      },
-      {}
-    );
+      .query("SELECT pollId, apartment, vote FROM votes;");
 
     const updatedPolls = polls.map((poll) => ({
       ...poll,
-      votedApartments: pollVotes[poll.id] || [],
+      votes: votes
+        .filter((vote) => vote.pollId === poll.id)
+        .map(({ apartment, vote }) => ({ apartment, vote })),
     }));
 
     res.status(200).json({
@@ -108,11 +99,9 @@ app.get("/polls/:id", async (req, res) => {
 
     const [votes]: [RowDataPacket[], FieldPacket[]] = await connection
       .promise()
-      .query("SELECT apartment FROM votes WHERE pollId = ?", [id]);
+      .query("SELECT apartment, vote FROM votes WHERE pollId = ?", [id]);
 
-    const votedApartments = votes.map((vote) => vote.apartment);
-
-    const updatedPoll = { ...poll, votedApartments };
+    const updatedPoll = { ...poll, votes };
 
     res.status(200).json({ totalApartments, poll: updatedPoll });
   } catch (error) {
