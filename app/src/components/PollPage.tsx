@@ -21,6 +21,7 @@ import { FormSchema } from "./PollFormSchema";
 import { VoteCard } from "./VoteCard";
 import { CancelledPollMessage } from "./CancelledPollMessage";
 import { ResultsCard } from "./ResultsCard";
+import { Button } from "./ui/button";
 
 export function PollPage() {
   const { id } = useParams();
@@ -140,7 +141,10 @@ export function PollPage() {
   return (
     <>
       <Toaster />
-      <Card>
+      <Button variant="secondary" type="button" onClick={() => navigate("/")}>
+        Home
+      </Button>
+      <Card className="my-4">
         <CardHeader>
           <CardTitle className="text-4xl font-bold text-center text-primary">
             {poll.title}
