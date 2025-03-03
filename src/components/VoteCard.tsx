@@ -30,32 +30,41 @@ export function VoteCard({
   onSubmit,
 }: VoteCardProps) {
   return (
-    <Card className="text-center w-1/2">
-      <CardHeader className="pb-0">
+    <Card className="relative h-[360px] w-1/2 flex flex-col items-center justify-center">
+      <CardHeader className="absolute top-0 w-full text-center">
         <CardTitle>
           <h2>Your Vote</h2>
         </CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="w-full p-6 flex flex-col items-center justify-center flex-grow">
         {pollStatus === "Voted" || pollStatus === "Closed" ? (
-          <p>
-            {tenantVote
-              ? `You voted ${tenantVote} for this poll`
-              : "You didn't vote for this poll"}
-          </p>
+          tenantVote === "yes" ? (
+            <p className="text-2xl font-bold text-primary">
+              {tenantVote.toUpperCase()}
+            </p>
+          ) : tenantVote === "no" ? (
+            <p className="text-2xl font-bold text-destructive">
+              {tenantVote.toUpperCase()}
+            </p>
+          ) : (
+            <p className="text-2xl font-bold">DIDN'T VOTE</p>
+          )
         ) : pollStatus === "Open" ? (
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)}>
+            <form
+              className="relative w-full flex flex-col justify-center items-center flex-grow"
+              onSubmit={form.handleSubmit(onSubmit)}
+            >
               <FormField
                 control={form.control}
                 name="submittedVote"
                 render={({ field }) => (
-                  <FormItem className="my-6">
+                  <FormItem>
                     <FormControl>
                       <RadioGroup
                         onValueChange={field.onChange}
                         defaultValue={field.value}
-                        className="flex justify-center gap-20"
+                        className="flex justify-center gap-28"
                       >
                         {["yes", "no"].map((option) => (
                           <FormItem
@@ -80,6 +89,7 @@ export function VoteCard({
                 )}
               />
               <Button
+                className="absolute bottom-0"
                 variant="default"
                 type="submit"
                 disabled={!form.formState.isValid}
