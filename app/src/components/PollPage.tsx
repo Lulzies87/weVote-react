@@ -5,6 +5,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
 import { server } from "../services/axiosInstance";
 import { useTenant } from "@/context/TenantContext";
+import { useForm } from "react-hook-form";
 import {
   Card,
   CardContent,
@@ -12,27 +13,14 @@ import {
   CardHeader,
   CardTitle,
 } from "./ui/card";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "./ui/form";
-import { useForm } from "react-hook-form";
-import { RadioGroup } from "./ui/radio-group";
-import { RadioGroupItem } from "@radix-ui/react-radio-group";
-import { Button } from "./ui/button";
 import { Vote } from "@/types/vote";
 import { Poll } from "@/types/poll";
 import { toast, Toaster } from "sonner";
-
-const FormSchema = z.object({
-  submittedVote: z.enum(["yes", "no"], {
-    required_error: "You need to select Yes or No.",
-  }),
-});
+import { getPollStatus, getTenantVote } from "@/functions/functions";
+import { FormSchema } from "./PollFormSchema";
+import { VoteCard } from "./VoteCard";
+import { CancelledPollMessage } from "./CancelledPollMessage";
+import { ResultsCard } from "./ResultsCard";
 
 export function PollPage() {
   const { id } = useParams();
@@ -89,6 +77,9 @@ export function PollPage() {
   }
 
   if (!poll) return <h1>Loading poll data...</h1>;
+
+  let pollStatus = getPollStatus(poll, tenant).status;
+  const tenantVote = getTenantVote(poll, tenant!.apartment);
 
   const onSubmit = async (data: z.infer<typeof FormSchema>) => {
     if (!id || !tenant) throw Error("Couldn't find poll ID / tenant data.");
@@ -157,7 +148,7 @@ export function PollPage() {
           <div className="flex justify-between">
             <CardDescription>Cost: {poll.cost}</CardDescription>
             <CardDescription>
-              Votes: {poll.votedApartments?.length} / {totalApartments}
+              Votes: {poll.votes?.length} / {totalApartments}
             </CardDescription>
             <CardDescription>
               Deadline: {new Date(poll.deadline).toLocaleDateString("en-GB")}
@@ -166,69 +157,22 @@ export function PollPage() {
         </CardHeader>
         <CardContent>
           <p>{poll.details}</p>
-
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)}>
-              <FormField
-                control={form.control}
-                name="submittedVote"
-                render={({ field }) => (
-                  <FormItem className="my-6">
-                    <FormControl>
-                      <RadioGroup
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                        className="flex justify-center gap-20"
-                      >
-                        <FormItem className="flex items-center gap-1">
-                          <FormControl>
-                            <RadioGroupItem
-                              className="size-4 rounded-full m-0 border-2 bg-muted data-[state=checked]:bg-primary"
-                              value="yes"
-                            />
-                          </FormControl>
-                          <FormLabel className="font-normal text-md">
-                            Vote Yes
-                          </FormLabel>
-                        </FormItem>
-                        <FormItem className="flex items-center gap-1">
-                          <FormControl>
-                            <RadioGroupItem
-                              className="size-4 rounded-full m-0 border-2 bg-muted data-[state=checked]:bg-primary"
-                              value="no"
-                            />
-                          </FormControl>
-                          <FormLabel className="font-normal text-md">
-                            Vote No
-                          </FormLabel>
-                        </FormItem>
-                      </RadioGroup>
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <div className="flex justify-around">
-                <Button
-                  variant={"destructive"}
-                  type="button"
-                  onClick={() => navigate("/")}
-                >
-                  Back
-                </Button>
-                <Button
-                  variant={"default"}
-                  type="submit"
-                  disabled={!form.formState.isValid}
-                >
-                  Submit
-                </Button>
-              </div>
-            </form>
-          </Form>
         </CardContent>
       </Card>
+
+      {pollStatus === "Cancelled" ? (
+        <CancelledPollMessage />
+      ) : (
+        <div className="flex justify-between gap-4 my-4">
+          <VoteCard
+            pollStatus={pollStatus}
+            tenantVote={tenantVote}
+            form={form}
+            onSubmit={onSubmit}
+          />
+          <ResultsCard pollStatus={pollStatus} poll={poll} />
+        </div>
+      )}
     </>
   );
 }
