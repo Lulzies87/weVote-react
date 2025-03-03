@@ -1,4 +1,5 @@
 import { server } from "@/services/axiosInstance";
+import { Tenant } from "@/types/tenant";
 import React, {
   createContext,
   useState,
@@ -6,17 +7,6 @@ import React, {
   useContext,
   useEffect,
 } from "react";
-
-interface Tenant {
-  id: number;
-  fName: string;
-  lName: string;
-  tenantID: string;
-  email: string;
-  phone: string;
-  apartment: number;
-  createdAt: string;
-}
 
 interface TenantContextType {
   tenant: Tenant | null;
