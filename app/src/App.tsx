@@ -50,7 +50,7 @@ function App() {
         </Button>
       </div>
 
-      <Card>
+      <Card className="bg-white/90">
         <CardHeader className="pb-0">
           <div className="flex justify-between items-center">
             <CardTitle className="font-bold text-2xl text-primary">

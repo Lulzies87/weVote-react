@@ -144,7 +144,7 @@ export function PollPage() {
       <Button variant="secondary" type="button" onClick={() => navigate("/")}>
         Home
       </Button>
-      <Card className="my-4">
+      <Card className="my-4 bg-white/90">
         <CardHeader>
           <CardTitle className="text-4xl font-bold text-center text-primary">
             {poll.title}
