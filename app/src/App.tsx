@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { server } from "./services/axiosInstance";
 import { Poll } from "./types/poll";
 import {
@@ -10,7 +10,6 @@ import {
   TableHeader,
   TableRow,
 } from "./components/ui/table";
-import { Button } from "./components/ui/button";
 import { NewPollForm } from "./components/NewPollForm";
 import { useTenant } from "./context/TenantContext";
 import { Card, CardContent, CardHeader, CardTitle } from "./components/ui/card";
@@ -19,8 +18,7 @@ import { getPollStatus } from "./functions/functions";
 function App() {
   const [polls, setPolls] = useState<Poll[]>([]);
   const [totalApartments, setTotalApartments] = useState(0);
-  const { tenant, logout } = useTenant();
-  const navigate = useNavigate();
+  const { tenant } = useTenant();
 
   useEffect(() => {
     async function fetchPolls() {
@@ -36,20 +34,8 @@ function App() {
     fetchPolls();
   }, []);
 
-  const handleLogout = () => {
-    logout();
-    navigate("/login");
-  };
-
   return (
     <>
-      <div className="flex justify-between items-center m-4">
-        <h1>Welcome, {tenant?.fName}</h1>
-        <Button className="h-6 w-16" variant={"outline"} onClick={handleLogout}>
-          Logout
-        </Button>
-      </div>
-
       <Card className="bg-white/90">
         <CardHeader className="pb-0">
           <div className="flex justify-between items-center">
