@@ -3,6 +3,7 @@ import App from "./App";
 import { PollPage } from "./components/PollPage";
 import { NotFoundPage } from "./components/NotFoundPage";
 import { LoginPage } from "./components/LoginPage";
+import { Layout } from "./components/Layout";
 
 const checkAuth = () => {
   const token = localStorage.getItem("token");
@@ -21,8 +22,14 @@ const loginLoader = () => {
 };
 
 export const router = createBrowserRouter([
-  { path: "/", element: <App />, loader: checkAuth },
+  {
+    element: <Layout />,
+    loader: checkAuth,
+    children: [
+      { path: "/", element: <App /> },
+      { path: "/polls/:id", element: <PollPage /> },
+    ],
+  },
   { path: "/login", element: <LoginPage />, loader: loginLoader },
-  { path: "/polls/:id", element: <PollPage />, loader: checkAuth },
   { path: "*", element: <NotFoundPage /> },
 ]);
