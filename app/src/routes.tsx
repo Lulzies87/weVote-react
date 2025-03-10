@@ -34,5 +34,5 @@ export const router = createBrowserRouter([
   { path: "*", element: <NotFoundPage /> },
 ],
 {
-  basename: "/weVote"
+  basename: "/weVote-react"
 });
