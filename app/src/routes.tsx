@@ -32,7 +32,4 @@ export const router = createHashRouter([
   },
   { path: "/login", element: <LoginPage />, loader: loginLoader },
   { path: "*", element: <NotFoundPage /> },
-],
-{
-  basename: "/weVote-react"
-});
+]);
