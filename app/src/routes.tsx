@@ -1,4 +1,4 @@
-import { createBrowserRouter, redirect } from "react-router-dom";
+import { createHashRouter, redirect } from "react-router-dom";
 import App from "./App";
 import { PollPage } from "./components/PollPage";
 import { NotFoundPage } from "./components/NotFoundPage";
@@ -21,7 +21,7 @@ const loginLoader = () => {
   return null;
 };
 
-export const router = createBrowserRouter([
+export const router = createHashRouter([
   {
     element: <Layout />,
     loader: checkAuth,
