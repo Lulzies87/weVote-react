@@ -43,6 +43,29 @@ app.get("/tenants/me", async (req, res) => {
   }
 });
 
+app.get("/tenants/random", async (_, res) => {
+  try {
+    const connection = await getConnection();
+    const query = "SELECT phone FROM tenants ORDER BY RAND() LIMIT 1;";
+    const [randomTenant]: [RowDataPacket[], FieldPacket[]] = await connection
+      .promise()
+      .query(query);
+
+    if (randomTenant.length === 0) {
+      res.status(404).json({ error: "Couldn't find a random tenant" });
+      return;
+    }
+
+    res.json(randomTenant[0].phone);
+  } catch (error) {
+    res
+      .status(500)
+      .json({
+        error: "Failed to fetch random tenant. Please try again later.",
+      });
+  }
+});
+
 app.get("/polls", async (_, res) => {
   try {
     const connection = await getConnection();
