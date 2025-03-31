@@ -110,10 +110,12 @@ export function LoginPage() {
                   </FormItem>
                 )}
               />
-              <Button type="submit">Login</Button>
-              <Button variant="secondary" type="button" onClick={randomConnect}>
-                DEMO (Connect as a random tenant)
-              </Button>
+              <div className="flex flex-col justify-between gap-1">
+                <Button type="submit">Login</Button>
+                <Button variant="demo" type="button" onClick={randomConnect}>
+                  DEMO (Connect as a random tenant)
+                </Button>
+              </div>
             </form>
           </Form>
         </CardContent>
