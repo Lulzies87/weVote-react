@@ -73,6 +73,13 @@ export function LoginPage() {
     }
   }
 
+  async function randomConnect() {
+    const res = await server.get("/tenants/random");
+    const randomPhone = res.data;
+    form.setValue("phone", randomPhone);
+    onSubmit({ phone: randomPhone });
+  }
+
   return (
     <div>
       <Toaster />
@@ -103,8 +110,9 @@ export function LoginPage() {
                   </FormItem>
                 )}
               />
-              <Button type="submit" className="mx-auto w-full">
-                Login
+              <Button type="submit">Login</Button>
+              <Button variant="secondary" type="button" onClick={randomConnect}>
+                DEMO (Connect as a random tenant)
               </Button>
             </form>
           </Form>
