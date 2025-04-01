@@ -11,7 +11,11 @@ import authRoutes from "./routes/authRoutes";
 const app = express();
 const PORT = process.env.PORT ?? 3000;
 
-app.use(cors());
+const corsOptions = {
+  origin: process.env.CORS_ORIGIN,
+};
+
+app.use(cors(corsOptions));
 app.use(json());
 
 app.use("/tenants", tenantRoutes);
