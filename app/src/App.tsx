@@ -14,6 +14,8 @@ import { NewPollForm } from "./components/NewPollForm";
 import { useTenant } from "./context/TenantContext";
 import { Card, CardContent, CardHeader, CardTitle } from "./components/ui/card";
 import { getPollStatus } from "./functions/functions";
+import { Trash } from "lucide-react";
+import { Button } from "./components/ui/button";
 
 function App() {
   const [polls, setPolls] = useState<Poll[]>([]);
@@ -33,6 +35,15 @@ function App() {
 
     fetchPolls();
   }, []);
+
+  const handleDelete = async (id: number) => {
+    try {
+      await server.delete(`/polls/${id}`);
+      setPolls((prevPolls) => prevPolls.filter((poll) => poll.id !== id));
+    } catch (error) {
+      console.error("Failed to delete poll", error);
+    }
+  };
 
   return (
     <>
@@ -81,6 +92,16 @@ function App() {
                       </TableCell>
                       <TableCell>
                         {new Date(poll.deadline).toLocaleDateString("en-GB")}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <Button
+                          variant="destructive"
+                          size="icon"
+                          onClick={() => handleDelete(poll.id!)}
+                          aria-label="Delete poll"
+                        >
+                          <Trash />
+                        </Button>
                       </TableCell>
                     </TableRow>
                   );
