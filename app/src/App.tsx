@@ -14,8 +14,7 @@ import { NewPollForm } from "./components/NewPollForm";
 import { useTenant } from "./context/TenantContext";
 import { Card, CardContent, CardHeader, CardTitle } from "./components/ui/card";
 import { getPollStatus } from "./functions/functions";
-import { Trash } from "lucide-react";
-import { Button } from "./components/ui/button";
+import { DeletePollButton } from "./components/DeletePollButton";
 
 function App() {
   const [polls, setPolls] = useState<Poll[]>([]);
@@ -94,14 +93,10 @@ function App() {
                         {new Date(poll.deadline).toLocaleDateString("en-GB")}
                       </TableCell>
                       <TableCell className="text-right">
-                        <Button
-                          variant="destructive"
-                          size="icon"
+                        <DeletePollButton
+                          poll={poll}
                           onClick={() => handleDelete(poll.id!)}
-                          aria-label="Delete poll"
-                        >
-                          <Trash />
-                        </Button>
+                        />
                       </TableCell>
                     </TableRow>
                   );
