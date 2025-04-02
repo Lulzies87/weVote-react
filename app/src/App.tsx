@@ -67,7 +67,7 @@ function App() {
 
                   return (
                     <TableRow key={poll.id}>
-                      <TableCell className="font-medium">
+                      <TableCell className="font-medium whitespace-nowrap">
                         <Link to={`/polls/${poll.id}`}>{poll.title}</Link>
                       </TableCell>
                       <TableCell className={status.color}>
@@ -76,7 +76,7 @@ function App() {
                       <TableCell>
                         {poll.cost == 0 ? "No Cost" : poll.cost}
                       </TableCell>
-                      <TableCell>
+                      <TableCell className="whitespace-nowrap">
                         {poll.votes?.length} / {totalApartments}
                       </TableCell>
                       <TableCell>

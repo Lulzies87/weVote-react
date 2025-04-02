@@ -167,7 +167,7 @@ export function PollPage() {
       {pollStatus === "Cancelled" ? (
         <CancelledPollMessage />
       ) : (
-        <div className="flex justify-between gap-4 my-4">
+        <div className="flex md:flex-row flex-col justify-between gap-4 my-4">
           <VoteCard
             pollStatus={pollStatus}
             tenantVote={tenantVote}

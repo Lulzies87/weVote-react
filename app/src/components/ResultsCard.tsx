@@ -15,7 +15,7 @@ type ResultsCardProps = {
 
 export function ResultsCard({ pollStatus, poll }: ResultsCardProps) {
   return (
-    <Card className="h-[360px] w-1/2 bg-white/90">
+    <Card className="h-[360px] md:w-1/2 bg-white/90">
       <CardHeader className="text-center pb-0">
         <CardTitle>
           <h2>Results</h2>

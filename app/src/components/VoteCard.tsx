@@ -30,7 +30,7 @@ export function VoteCard({
   onSubmit,
 }: VoteCardProps) {
   return (
-    <Card className="relative h-[360px] w-1/2 flex flex-col items-center justify-center bg-white/90">
+    <Card className="relative md:w-1/2 md:h-[360px] h-[240px] flex flex-col items-center justify-center bg-white/90">
       <CardHeader className="absolute top-0 w-full text-center">
         <CardTitle>
           <h2>Your Vote</h2>
@@ -64,7 +64,7 @@ export function VoteCard({
                       <RadioGroup
                         onValueChange={field.onChange}
                         defaultValue={field.value}
-                        className="flex justify-center gap-28"
+                        className="flex gap-28 justify-center"
                       >
                         {["yes", "no"].map((option) => (
                           <FormItem
