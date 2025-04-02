@@ -48,7 +48,7 @@ function App() {
 
         <CardContent>
           {polls.length === 0 ? (
-            <p>No polls were taken yet.</p>
+            <p>No polls were created yet.</p>
           ) : (
             <Table>
               <TableHeader>
