@@ -3,6 +3,7 @@ import { z } from "zod";
 import axios from "axios";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { server } from "@/services/axiosInstance";
+import { useState } from "react";
 import {
   Form,
   FormControl,
@@ -25,7 +26,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "./ui/dialog";
-import { useState } from "react";
+import { ClipboardPlus } from "lucide-react";
 
 const FormSchema = z.object({
   title: z.string().min(3, "Title must be at least 3 characters long."),
@@ -102,8 +103,8 @@ export function NewPollForm() {
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
-          <Button variant={"outline"} size={"tiny"}>
-            +
+          <Button variant={"outline"} size={"icon"}>
+            <ClipboardPlus className="h-4 w-4" />
           </Button>
         </DialogTrigger>
 

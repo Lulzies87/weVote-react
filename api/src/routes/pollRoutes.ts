@@ -135,4 +135,18 @@ router.post("/:pollID/votes", async (req, res) => {
   }
 });
 
+router.delete("/:id", async (req, res) => {
+  const id = req.params.id;
+
+  try {
+    const connection = await getConnection();
+    const query = `DELETE FROM polls WHERE id = ?;`;
+    await connection.execute(query, [id]);
+    res.status(200).json({ message: "Poll deleted successfully." });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to delete the poll." });
+  }
+});
+
 export default router;
