@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - 'api/**'
+      - '.github/workflows/deploy-api.yml'
 
 jobs:
   build-and-deploy:
@@ -34,9 +35,9 @@ jobs:
         chmod 600 private_key.pem
     - name: Copy files to EC2
       run: |
-        scp -o StrictHostKeyChecking=no -i private_key.pem -r api/dist/* ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:${{ secrets.EC2_PATH }}/dist/
-    - name: Restart NGINX
+        scp -o StrictHostKeyChecking=no -i private_key.pem -r api/ ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }}:/home/ec2-user/weVote/
+    - name: Restart weVoteApi service
       run: |
-        ssh -o StrictHostKeyChecking=no -i private_key.pem ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} "sudo systemctl restart nginx"
+        ssh -o StrictHostKeyChecking=no -i private_key.pem ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} "sudo systemctl restart weVoteApi.service"
     - name: Cleanup
       run: rm -f private_key.pem
