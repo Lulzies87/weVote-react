@@ -24,9 +24,7 @@ app.use("/login", authRoutes);
 
 async function init() {
   await initConnection();
-  app.listen(PORT, () =>
-    console.log(`Server Listening on http://localhost:${PORT}`)
-  );
+  app.listen(PORT, () => console.log(`Server listening on port ${PORT}`));
 }
 
 init();
