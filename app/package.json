@@ -1,5 +1,5 @@
 {
-  "homepage": "https://Lulzies87.github.io/weVote-react/",
+  "homepage": "https://wevote.lilachelayza.com",
   "name": "app",
   "private": true,
   "version": "0.0.0",
@@ -9,8 +9,8 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d dist"
+    "predeploy": "npm run build && echo 'wevote.lilachelayza.com' > dist/CNAME",
+    "deploy": "gh-pages -d dist --add"
   },
   "dependencies": {
     "@hookform/resolvers": "^4.1.0",
